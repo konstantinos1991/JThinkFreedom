@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.scify.jthinkfreedom.stimuli;
 
 import com.googlecode.javacpp.Loader;
@@ -110,14 +106,14 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
             
             // Load the classifier files from Java resources.
 //            String leftClassiferName = "haarcascade_lefteye_2splits.xml";
-            String openClassiferName = "haarcascade_eye.xml";           
+            String openClassfierName = "haarcascade_eye.xml";           
 //            String leftClassiferName = "haarcascade_mcs_righteye.xml"; // This is reverse
             String closedClassiferName = "haarcascade_mcs_lefteye.xml";
 //            String rightClassiferName = "haarcascade_mcs_lefteye.xml"; // This is reverse
             //File classifierFile = Loader.extractResource(classiferName, null, "classifier", ".xml");
-            File openClassifierFile = new File(HaarCascadeModel.class.getResource(openClassiferName).toURI());
+            File openClassifierFile = new File(HaarCascadeModel.class.getResource(openClassfierName).toURI());
             if (openClassifierFile == null || openClassifierFile.length() <= 0) {
-                throw new IOException("Could not extract \"" + openClassiferName + "\" from Java resources.");
+                throw new IOException("Could not extract \"" + openClassfierName + "\" from Java resources.");
             }
             File closedClassifierFile = new File(HaarCascadeModel.class.getResource(closedClassiferName).toURI());
             if (closedClassifierFile == null || closedClassifierFile.length() <= 0) {

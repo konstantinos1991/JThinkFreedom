@@ -110,9 +110,11 @@ public class HeadUpStimulus extends StimulusAdapter<IplImage> {
 
         // For each source
         for (ISensor<IplImage> isCurSensor : lSensors) {
+            
             // Once every 1/10sec
             if (new Date().getTime() - lastUpdate < 100)
                 return;
+            lastUpdate = new Date().getTime();
             
             // Get latest data from sensor
             grabbedImage = isCurSensor.getData();

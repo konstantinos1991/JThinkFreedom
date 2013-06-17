@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.scify.jthinkfreedom.reactions;
+package org.scify.jthinkfreedom.reactors;
 
 /**
  *
