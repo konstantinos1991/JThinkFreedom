@@ -7,7 +7,7 @@ package org.scify.jthinkfreedom.stimuli;
 import java.util.LinkedList;
 import java.util.List;
 import org.scify.jthinkfreedom.sensors.ISensor;
-import org.scify.jthinkfreedom.reactions.IReactor;
+import org.scify.jthinkfreedom.reactors.IReactor;
 
 /**
  *

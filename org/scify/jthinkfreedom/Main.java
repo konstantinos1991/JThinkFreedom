@@ -8,8 +8,8 @@ import com.googlecode.javacv.cpp.opencv_core;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.scify.jthinkfreedom.reactions.LeftClicker;
-import org.scify.jthinkfreedom.reactions.RightClicker;
+import org.scify.jthinkfreedom.reactors.LeftClickReactor;
+import org.scify.jthinkfreedom.reactors.RightClickReactor;
 import org.scify.jthinkfreedom.sensors.NetworkGraphSensor;
 import org.scify.jthinkfreedom.sensors.WebcamSensor;
 import org.scify.jthinkfreedom.sensors.ISensor;
@@ -49,12 +49,12 @@ public class Main {
 //        sHeadUp.setTriggerOffset(10);
 //        sSensor.addStimulus(sHeadUp);
 //        sHeadUp.addSensor(sSensor);
-//        sHeadUp.addReactor(new RightClicker());
+//        sHeadUp.addReactor(new RightClickReactor());
         
         LeftEyeClosedStimulus sLeftClosedStimulus = new LeftEyeClosedStimulus();
         sSensor.addStimulus(sLeftClosedStimulus);
         sLeftClosedStimulus.addSensor(sSensor);
-        sLeftClosedStimulus.addReactor(new LeftClicker());
+        sLeftClosedStimulus.addReactor(new LeftClickReactor());
         
 //        final CanvasFrame win = new CanvasFrame("Source");
         Date dStart = new Date();
