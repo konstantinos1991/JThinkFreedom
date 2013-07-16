@@ -2,9 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.scify.jthinkfreedom.reactions;
+package org.scify.jthinkfreedom.reactors;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,14 +13,16 @@ import java.util.logging.Logger;
  *
  * @author ggianna
  */
-public class RightClicker extends ReactorAdapter {
+public class RightClickReactor extends ReactorAdapter {
 
     @Override
     public void react() {
         try {
 //            String[] sCmd = new String[]{"/usr/bin/xte", "'mouseclick 3'"};
 //            String[] sCmd = new String[]{"/usr/bin/xte", "'key A'"};
-            String sCmd = "eventScripts/rightClick.sh";
+            
+            URL url = RightClickReactor.class.getResource("../../../../eventScripts/rightClick.sh");
+            String sCmd = url.getPath();
             Process p = Runtime.getRuntime().exec(sCmd);
             
             try {

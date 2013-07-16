@@ -16,7 +16,7 @@ import gr.demokritos.iit.jinsect.documentModel.representations.DocumentNGramGrap
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import org.scify.jthinkfreedom.reactions.IReactor;
+import org.scify.jthinkfreedom.reactors.IReactor;
 
 /**
  *
