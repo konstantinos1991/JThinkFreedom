@@ -4,21 +4,11 @@
  */
 package org.scify.jthinkfreedom.sensors;
 
-import com.googlecode.javacpp.Loader;
 import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.cpp.opencv_core;
-import com.googlecode.javacv.cpp.opencv_objdetect;
 import static com.googlecode.javacv.cpp.opencv_core.*;
-import static com.googlecode.javacv.cpp.opencv_imgproc.*;
-import static com.googlecode.javacv.cpp.opencv_objdetect.*;
-
-import gr.demokritos.iit.jinsect.documentModel.representations.DocumentNGramGraph;
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.scify.jthinkfreedom.reactors.IReactor;
 
 /**
  *
@@ -34,7 +24,7 @@ public class NetworkImageSensor extends SensorAdapter<IplImage> implements Runna
     
     public NetworkImageSensor() {
         if (sCameraUrl == null)
-            sCameraUrl = "http://localhost:80/cam";
+            sCameraUrl = "http://localhost:8080";
     }
     
     public NetworkImageSensor(String sCameraUrl) {
@@ -45,7 +35,6 @@ public class NetworkImageSensor extends SensorAdapter<IplImage> implements Runna
     public IplImage getData() {
         try {
             stop = false;
-//            while (!stop && (grabbedImage = grabber.grab()) != null) {
             if (!stop && (grabbedImage = grabber.grab()) != null) {
                 return grabbedImage;
             }
@@ -119,19 +108,12 @@ public class NetworkImageSensor extends SensorAdapter<IplImage> implements Runna
                 grabber.setImageWidth(getWidth());
                 grabber.setImageHeight(getHeight());
                 grabber.start();
-                grabbedImage = grabber.grab();
                 // Running
                 this.bRunning = true;
                 // Init and start reader thread
                 tDataReader = new Thread(this);
                 tDataReader.start();
             } catch (Exception e) {
-//                if (grabber != null) grabber.release();
-//                grabber = new OpenCVFrameGrabber(0);
-//                grabber.setImageWidth(getWidth());
-//                grabber.setImageHeight(getHeight());
-//                grabber.start();
-//                grabbedImage = grabber.grab();
                 e.printStackTrace(System.err);
                 this.exception = e;
                 // No longer running

@@ -25,7 +25,6 @@ public class WebcamSensor extends NetworkImageSensor {
                 grabber.setImageWidth(getWidth());
                 grabber.setImageHeight(getHeight());
                 grabber.start();
-                grabbedImage = grabber.grab();
                 // Running
                 this.bRunning = true;
                 // Init and start reader thread
