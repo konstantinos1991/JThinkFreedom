@@ -84,4 +84,11 @@ Instructions on how to build JavaCV-0.5 for Linux (JDK 6 or higher)
 	sudo make all
 	sudo make install
 
-4) Include the jars you extracted from the zip archives to the project
+4) This library is also needed http://sourceforge.net/projects/libdc1394/files/libdc1394-2/2.2.1/
+
+	./configure --enable-shared
+	sudo make all
+	sudo make install
+
+5) Include the jars you extracted from the zip archives to the project
+
