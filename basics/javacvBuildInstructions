@@ -1,0 +1,87 @@
+Instructions on how to build JavaCV-0.5 for Linux (JDK 6 or higher)
+
+1) Download and build OpenCV-2.4.5	http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.5/
+	cmake .
+	sudo make all
+	sudo make install
+
+2) Download compiled java libraries	http://code.google.com/p/javacv/downloads/list
+	javacv-0.5-bin
+	javacv-0.5-cppjars
+
+3) Download and build FFmpeg-1.2.1	http://ffmpeg.org/download.html
+	-DEPENDENCIES
+	sudo apt-get update
+	sudo apt-get -y install autoconf automake build-essential git libass-dev libgpac-dev \
+	libsdl1.2-dev libtheora-dev libtool libva-dev libvdpau-dev libvorbis-dev libx11-dev \
+	libxext-dev libxfixes-dev pkg-config texi2html zlib1g-dev
+	mkdir ~/ffmpeg_sources
+
+	-yasm - assembler
+	cd ~/ffmpeg_sources
+	wget http://www.tortall.net/projects/yasm/releases/yasm-1.2.0.tar.gz
+	tar xzvf yasm-1.2.0.tar.gz
+	cd yasm-1.2.0
+	./configure --enable-shared
+	sudo make all
+	sudo make install
+	make distclean
+	. ~/.profile
+
+	-x264 - video encoder
+	cd ~/ffmpeg_sources
+	git clone --depth 1 git://git.videolan.org/x264.git
+	cd x264
+	./configure --enable-shared
+	sudo make all
+	sudo make install
+	make distclean
+
+	-aac - audio encoder
+	cd ~/ffmpeg_sources
+	git clone --depth 1 git://github.com/mstorsjo/fdk-aac.git
+	cd fdk-aac
+	autoreconf -fiv
+	./configure --enable-shared
+	sudo make all
+	sudo make install
+	make distclean
+
+	-lame - mp3 library
+	sudo apt-get install nasm
+	cd ~/ffmpeg_sources
+	wget http://downloads.sourceforge.net/project/lame/lame/3.99/lame-3.99.5.tar.gz
+	tar xzvf lame-3.99.5.tar.gz
+	cd lame-3.99.5
+	./configure --enable-nasm --enable-shared
+	sudo make all
+	sudo make install
+	make distclean
+
+	-opus - audio encoder and decoder
+	cd ~/ffmpeg_sources
+	wget http://downloads.xiph.org/releases/opus/opus-1.0.2.tar.gz
+	tar xzvf opus-1.0.2.tar.gz
+	cd opus-1.0.2
+	./configure --enable-shared
+	sudo make all
+	sudo make install
+	make distclean
+
+	-vpx - video encoder and decoder
+	cd ~/ffmpeg_sources
+	git clone --depth 1 http://git.chromium.org/webm/libvpx.git
+	cd libvpx
+	./configure --enable-shared
+	sudo make all
+	sudo make install
+	make clean
+
+	FFmpeg-1.2.1
+	-Go to the folder where you downloaded the source code
+
+	./configure --enable-shared
+	sudo make all
+	sudo make install
+
+4) Include the jars you extracted from the zip archives to the project
