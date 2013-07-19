@@ -26,9 +26,16 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
     protected Exception exception = null;
     protected int SensitivityCount = 4; // Frames before reaction
     private int iCurSensitivity = SensitivityCount;
-    protected int divider = 2;
+    protected int divider = 1; // To scale the image
+    
     private long lastUpdate = 0, lastReaction = 0;
+    private long reactionTimer = 200; // In milliseconds
+            
     protected CvRect lastLeftRect = null, lastRightRect = null;
+    
+    protected int validityCount = 0;
+    protected int validitySize = 10; // Consecutive frames that must be true to trigger reactors
+    protected boolean[] validity = new boolean[validitySize]; // Valid eye closed frames
     
     protected opencv_core.CvMemStorage storage = null;
 
@@ -128,18 +135,21 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
                     
                     // If that eye is closer to the right one, call the reactors
                     if(Math.abs(r.x()-lastLeftRect.x()) > Math.abs(r.x()-lastRightRect.x())) {
-                        // 500 ms sensitivity
-                        if (new Date().getTime() - lastReaction < 500)
+                        // Sensitivity parameter
+                        if (new Date().getTime() - lastReaction < reactionTimer)
                             return;
+                        validity[validityCount++] = true; // Frame valid
                         shouldReact();
                         lastReaction = new Date().getTime();
                     }
                     else {
+                        validity[validityCount] = false; // Frame invalid
+                        validityCount = 0; // Reset validity variable
+                        iCurSensitivity = SensitivityCount; // Reset eye sensitivity
                         return;
                     }
                     openLeftEye = openEyeSearch();
-                    newTotal = openLeftEye.total();
-                    
+                    newTotal = openLeftEye.total();    
                 }
                 
             }
@@ -148,8 +158,13 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
 
     protected void shouldReact() {
         if (iCurSensitivity-- == 0) {
-            callReactors();
-            iCurSensitivity = SensitivityCount;
+            for(int i=0; i<validitySize; i++) { // Check if all frames are valid
+                if(validity[i] && validityCount == validitySize) {
+                    callReactors(); // React
+                    validityCount = 0; // Reset validity variable
+                }
+            }
+            iCurSensitivity = SensitivityCount; // Reset eye sensitivity
         }
         
         // DEBUG LINES

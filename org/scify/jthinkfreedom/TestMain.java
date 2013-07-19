@@ -2,9 +2,6 @@ package org.scify.jthinkfreedom;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.scify.jthinkfreedom.reactors.RightClickReactor;
 
 /**
  *

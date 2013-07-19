@@ -56,14 +56,18 @@ public class Main {
         sLeftClosedStimulus.addSensor(sSensor);
         sLeftClosedStimulus.addReactor(new RightClickReactor());
         
+        // Canvas
         final CanvasFrame win = new CanvasFrame("Source");
-        Date dStart = new Date();
         opencv_core.IplImage iToRender;
         
+        Date dStart = new Date();
+        
         while (true) {
+            // Canvas
             iToRender = sLeftClosedStimulus.getGrabbedImage();
             if(iToRender!=null)
                 win.showImage(iToRender);
+            
             Thread.yield();
             // Break after 90 seconds
             if (new Date().getTime() - dStart.getTime() > 90000)
@@ -72,6 +76,7 @@ public class Main {
         
         sSensor.stop();
         // Finalize
+        // Canvas
         win.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
         win.dispose();
         
