@@ -10,7 +10,6 @@ import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNIN
 import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Date;
 import org.scify.jthinkfreedom.sensors.ISensor;
 import org.scify.jthinkfreedom.stimuli.haarModels.HaarCascadeModel;
@@ -33,10 +32,6 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
     private long reactionTimer = 200; // In milliseconds
             
     protected CvRect lastLeftRect = null, lastRightRect = null;
-    
-    protected int validityCount = 0;
-    protected int validitySize = 5; // Consecutive frames that must be true to trigger reactors
-    protected boolean[] validity = new boolean[validitySize]; // Valid eye closed frames
     
     protected opencv_core.CvMemStorage storage = null;
 
@@ -139,38 +134,29 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
                         // Sensitivity parameter
                         if (new Date().getTime() - lastReaction < reactionTimer)
                             return;
-                        validity[validityCount++] = true; // Frame valid
                         shouldReact();
                         lastReaction = new Date().getTime();
                     }
                     else {
-                        Arrays.fill(validity, false); // Frame invalid; closed right eye
-                        validityCount = 0; // Reset validity variable
                         iCurSensitivity = SensitivityCount; // Reset eye sensitivity
                         return;
                     }
                     openLeftEye = openEyeSearch();
                     newTotal = openLeftEye.total();
                 }
-                Arrays.fill(validity, false); // Frame invalid; closed the other eye too
             }
+            iCurSensitivity = SensitivityCount; // Reset eye sensitivity
         }
     }
 
     protected void shouldReact() {
         if (iCurSensitivity-- == 0) {
-            for(int i=0; i<validitySize; i++) { // Check if all frames are valid
-                if(validity[i] && validityCount == validitySize) {
-                    callReactors(); // React
-                    validityCount = 0; // Reset validity variable
-                }
-            }
+            callReactors();
             iCurSensitivity = SensitivityCount; // Reset eye sensitivity
         }
         
         // DEBUG LINES
         System.err.println("Left eye: " + iCurSensitivity);
-        System.err.println("Validity: " + Arrays.toString(validity));
         //////////////
         
     }
