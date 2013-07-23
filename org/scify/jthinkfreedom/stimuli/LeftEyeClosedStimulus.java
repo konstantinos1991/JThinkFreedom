@@ -137,7 +137,7 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
                         shouldReact();
                         lastReaction = new Date().getTime();
                     }
-                    else {
+                    else { // If it's the left eye that closed
                         iCurSensitivity = SensitivityCount; // Reset eye sensitivity
                         return;
                     }
@@ -145,7 +145,8 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
                     newTotal = openLeftEye.total();
                 }
             }
-            iCurSensitivity = SensitivityCount; // Reset eye sensitivity
+            else // If you find more or less than two eyes
+                iCurSensitivity = SensitivityCount; // Reset eye sensitivity
         }
     }
 
@@ -161,7 +162,7 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
         
     }
 
-    protected CvSeq openEyeSearch() { //returns how many open eyes were detected
+    protected CvSeq openEyeSearch() { // Returns how many open eyes were detected
         grayImage = opencv_core.IplImage.create(cvGetSize(grabbedImage), IPL_DEPTH_8U, 1);
         cvCvtColor(grabbedImage, grayImage, CV_BGR2GRAY);
         
