@@ -1,0 +1,79 @@
+OpenCV Object tracking by making your own HaarClassifier
+
+***IMPORTANT***	The last step of this tutorial is slow and might take days to finish, so I recommend you set up
+		the training process on a server.
+
+From the home directory:
+
+	mkdir HaarTraining
+	cd HaarTraining
+
+Clone this github repository for convenience:
+
+	git clone https://github.com/mrnugget/opencv-haar-classifier-training
+	cd opencv-haar-classifier-training
+
+You now need to create the positive images - images that *ONLY* contain the object you need to detect.
+You can use the ffmpeg 'video-to-frames' utility for convenience. Just record a video of the object you wish to detect
+from different angles, and run the following command in the directory you put it in:
+
+	ffmpeg -i myvideo.avi -r 1 pos-%03d.jpeg
+
+This command will capture a frame per second. At this point you should have jpeg images with names pos-001, pos-002 etc.
+You now need to use an image editing software (like GIMP) to crop the object you need to detect from every picture. This
+takes some time, and you need about 40-50 positive images. Be careful, your cropped images should be of the same size.
+Once you have all of them, put them in the positive_images subdirectory.
+
+	mv *.jpeg ~/HaarTraining/opencv-haar-classifier-training/positive_images
+
+Next you need negative images. Using the same ffmpeg utility, you need to record everything that is *NOT* the object you
+need to detect. This includes background images, objects that may be confused for the desired object, etc. You need about
+1000 negative images.
+
+	ffmpeg -i myvideo.avi -r 1 neg-%03d.jpeg
+	mv *.jpeg ~/HaarTraining/opencv-haar-classifier-training/positive_images
+
+The following commands will create 2 file descriptors that will be needed for the training:
+
+	find ./positive_images -iname "*.jpeg" > positives
+	find ./negative_images -iname "*.jpeg" > negatives
+
+If you have OpenCV properly installed in your system, you can now run the following command:
+
+	perl bin/createsamples.pl positives negatives samples 1500\
+  	"opencv_createsamples -bgcolor 0 -bgthresh 0 -maxxangle 1.1\
+  	-maxyangle 1.1 maxzangle 0.5 -maxidev 40 -w 60 -h 60"
+
+Note: -w -h flags should be the width and height of your positive images.
+
+Now it's time to create the training data. For this you will need the mergevec utility:
+
+	svn checkout http://tutorial-haartraining.googlecode.com/svn/trunk/HaarTraining
+
+It needs a little modification. Open the file src/cvhaartraining.cpp with your favorite editor, and put the 'static'
+declaration in line 1814 in comments. Then go back to the HaarTraining directory and compile it:
+
+	make mergevec
+
+Now from the main build directory (where the positive and negative file descriptors were created) run:
+
+	find ./samples -name '*.vec' > samples
+	./mergevec samples samples.vec
+
+Finally:
+
+	opencv_haartraining -data classifier -vec samples.vec -bg negatives.dat\
+	-nstages 20 -nsplits 2 -minhitrate 0.999 -maxfalsealarm 0.5 -npos 40\
+	-nneg 1000 -w 60 -h 60 -nonsym -mem 1024 -mode ALL
+
+Where:	npos, nneg - number of positive/negative images
+	w, h - width and height of the positive images
+	mem - how much memory you intend to use for the training
+
+***IMPORTANT*** The last step is slow, it may take days of training.
+
+Sources for this tutorial:
+	http://coding-robin.de/2013/07/22/train-your-own-opencv-haar-classifier.html
+	http://stackoverflow.com/questions/7468274/ffmpeg-images-to-video-script-anyone
+	http://answers.opencv.org/question/839/mergeveccpp-error-compilation/
+	http://note.sonots.com/SciSoftware/haartraining.html

@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import org.scify.jthinkfreedom.reactors.TCPReactorClient;
-import org.scify.jthinkfreedom.sensors.NetworkGraphSensor;
 import org.scify.jthinkfreedom.sensors.WebcamSensor;
 import org.scify.jthinkfreedom.sensors.ISensor;
 import org.scify.jthinkfreedom.sensors.NetworkImageSensor;

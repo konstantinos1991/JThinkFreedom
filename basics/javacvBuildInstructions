@@ -1,5 +1,12 @@
 Instructions on how to build JavaCV-0.5 for Linux (JDK 6 or higher)
 
+General Info:
+
+*cmake needs to be installed to complete step 1.
+	sudo apt-get install cmake
+*you need to extract tar.gz files' contents with the following command
+	tar -xzvf filename
+
 1) Download and build OpenCV-2.4.5	http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.5/
 	cmake .
 	sudo make all
