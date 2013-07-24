@@ -78,8 +78,9 @@ public class TCPReactorServer implements Runnable {
     }
 
     private void triggerReactors() {
-        for (IReactor iCur : lReactors)
+        for (IReactor iCur : lReactors) {
             iCur.react();
+        }
     }
 
     public boolean isRunning() {

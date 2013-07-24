@@ -12,7 +12,7 @@ import org.scify.jthinkfreedom.stimuli.IStimulus;
  * @author ggianna
  */
 public abstract class SensorAdapter<T> implements ISensor<T> {
-    protected LinkedList<IStimulus> ilStimuli = new LinkedList<IStimulus>();
+    protected LinkedList<IStimulus> ilStimuli = new LinkedList<>();
     protected boolean bRunning = false;
 
     @Override
@@ -57,8 +57,9 @@ public abstract class SensorAdapter<T> implements ISensor<T> {
      */
     protected void updateStimuli() {        
         synchronized (ilStimuli) {
-            for (IStimulus<T> sCur : ilStimuli)
+            for (IStimulus<T> sCur : ilStimuli) {
                 sCur.onDataReceived();
+            }
         }
     }
 }

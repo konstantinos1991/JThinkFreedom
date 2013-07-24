@@ -12,6 +12,7 @@ import java.io.IOException;
 import static com.googlecode.javacv.cpp.opencv_core.*;
 import static com.googlecode.javacv.cpp.opencv_imgproc.*;
 import static com.googlecode.javacv.cpp.opencv_objdetect.*;
+import java.net.URISyntaxException;
 import java.util.Date;
 import org.scify.jthinkfreedom.sensors.ISensor;
 import org.scify.jthinkfreedom.stimuli.haarModels.HaarCascadeModel;
@@ -77,7 +78,7 @@ public class HeadUpStimulus extends StimulusAdapter<IplImage> {
         try {
             // Load the classifier file from Java resources.
             String classiferName = "haarcascade_frontalface_alt.xml";
-            //File classifierFile = Loader.extractResource(classiferName, null, "classifier", ".xml");
+            // File classifierFile = Loader.extractResource(classiferName, null, "classifier", ".xml");
             File classifierFile = new File(HaarCascadeModel.class.getResource(classiferName).toURI());
             if (classifierFile == null || classifierFile.length() <= 0) {
                 throw new IOException("Could not extract \"" + classiferName + "\" from Java resources.");
@@ -86,15 +87,15 @@ public class HeadUpStimulus extends StimulusAdapter<IplImage> {
             // Preload the opencv_objdetect module to work around a known bug.
             Loader.load(opencv_objdetect.class);
             classifier = new opencv_objdetect.CvHaarClassifierCascade(cvLoad(classifierFile.getAbsolutePath()));
-            //classifierFile.delete();
+            
             if (classifier.isNull()) {
                 throw new IOException("Could not load the classifier file.");
             }
 
             storage = opencv_core.CvMemStorage.create();
-        } catch (Exception e) {
+        } catch (URISyntaxException | IOException ex) {
             if (exception == null) {
-                exception = e;
+                exception = ex;
             }
         }
 
@@ -112,8 +113,9 @@ public class HeadUpStimulus extends StimulusAdapter<IplImage> {
         for (ISensor<IplImage> isCurSensor : lSensors) {
             
             // Once every 1/10sec
-            if (new Date().getTime() - lastUpdate < 100)
+            if (new Date().getTime() - lastUpdate < 100) {
                 return;
+            }
             lastUpdate = new Date().getTime();
             
             // Get latest data from sensor

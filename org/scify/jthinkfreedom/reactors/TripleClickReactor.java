@@ -17,9 +17,9 @@ public class TripleClickReactor   extends ReactorAdapter {
     @Override
     public void react() {
         try {
-//            String[] sCmd = new String[]{"/usr/bin/xte", "'mouseclick 3'"};
-//            String[] sCmd = new String[]{"/usr/bin/xte", "'key A'"};
-            String sCmd = "eventScripts/tripleClick.sh";
+            String[] sCmd = new String[]{"/usr/bin/xte", "mouseclick 1", "mouseclick 1", "mouseclick 1"};
+            //String[] sCmd = new String[]{"/usr/bin/xte", "'key A'"};
+            //String sCmd = "eventScripts/tripleClick.sh";
             Process p = Runtime.getRuntime().exec(sCmd);
             
             try {

@@ -8,7 +8,7 @@ import org.scify.jthinkfreedom.sensors.ISensor;
  * @author nikos
  */
 public class DoubleClickStimulus extends StimulusAdapter<MouseEvent> {
-    //in milliseconds
+    // In milliseconds
     private int doubleClickThreshold;
     private long firstClick = 0;
     private int assignedButton;

@@ -20,8 +20,9 @@ public class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
             return;
         }
         
-         if (new Date().getTime() - lastUpdate < 100)
+         if (new Date().getTime() - lastUpdate < 100) {
             return;
+        }
         lastUpdate = new Date().getTime();
         
         for (ISensor<IplImage> isCurSensor : lSensors) {

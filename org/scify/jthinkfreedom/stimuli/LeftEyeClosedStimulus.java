@@ -10,6 +10,7 @@ import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNIN
 import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Date;
 import org.scify.jthinkfreedom.sensors.ISensor;
 import org.scify.jthinkfreedom.stimuli.haarModels.HaarCascadeModel;
@@ -63,7 +64,7 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
                 throw new IOException("Could not load the classifier files.");
             }
 
-        } catch (Exception e) {
+        } catch (URISyntaxException | IOException e) {
             if (exception == null) {
                 exception = e;
             }
@@ -80,8 +81,9 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
         }
 
         // Once every 1/10sec        
-        if (new Date().getTime() - lastUpdate < 100)
+        if (new Date().getTime() - lastUpdate < 100) {
             return;
+        }
         lastUpdate = new Date().getTime();
 
         // For each source
@@ -102,12 +104,14 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
             for(int i=0; i<total; i++) {
                 CvRect r = new CvRect(cvGetSeqElem(openEye, i));
                 // If current eye is at the left of the previous one (mirrored)
-                if(r.x() > lastLeftRect.x())
-                    lastLeftRect = r; //make it our new current left eye
+                if(r.x() > lastLeftRect.x()) {
+                    lastLeftRect = r;
+                } //make it our new current left eye
                 
                 // If current eye is at the right of the previous one (mirrored)
-                if(r.x() < lastRightRect.x())
-                    lastRightRect = r; //make it our new current left eye
+                if(r.x() < lastRightRect.x()) {
+                    lastRightRect = r;
+                } //make it our new current left eye
             }
             
             // Take snapshot
@@ -132,8 +136,9 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
                     // If that eye is closer to the right one, call the reactors
                     if(Math.abs(r.x()-lastLeftRect.x()) > Math.abs(r.x()-lastRightRect.x())) {
                         // Sensitivity parameter
-                        if (new Date().getTime() - lastReaction < reactionTimer)
+                        if (new Date().getTime() - lastReaction < reactionTimer) {
                             return;
+                        }
                         shouldReact();
                         lastReaction = new Date().getTime();
                     }
@@ -145,8 +150,9 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
                     newTotal = openLeftEye.total();
                 }
             }
-            else // If you find more or less than two eyes
-                iCurSensitivity = SensitivityCount; // Reset eye sensitivity
+            else {
+                iCurSensitivity = SensitivityCount;
+            } // Reset eye sensitivity
         }
     }
 

@@ -1,9 +1,6 @@
 package org.scify.jthinkfreedom.stimuli;
 
-import com.googlecode.javacv.cpp.opencv_core;
 import java.awt.event.MouseEvent;
-import java.util.List;
-import org.scify.jthinkfreedom.reactors.IReactor;
 import org.scify.jthinkfreedom.sensors.ISensor;
 
 /**

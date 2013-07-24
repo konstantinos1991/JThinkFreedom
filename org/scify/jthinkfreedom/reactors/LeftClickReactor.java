@@ -5,7 +5,6 @@
 package org.scify.jthinkfreedom.reactors;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,10 +17,10 @@ public class LeftClickReactor  extends ReactorAdapter {
     @Override
     public void react() {
         try {
-//            String[] sCmd = new String[]{"/usr/bin/xte", "'mouseclick 3'"};
-//            String[] sCmd = new String[]{"/usr/bin/xte", "'key A'"};
-            URL url = LeftClickReactor.class.getResource("../../../../eventScripts/rightClick.sh");
-            String sCmd = url.getPath();
+            String[] sCmd = new String[]{"/usr/bin/xte", "mouseclick 1"};
+            //String[] sCmd = new String[]{"/usr/bin/xte", "'key A'"};
+            //URL url = LeftClickReactor.class.getResource("../../../../eventScripts/rightClick.sh");
+            //String sCmd = url.getPath();
             Process p = Runtime.getRuntime().exec(sCmd);
             
             try {

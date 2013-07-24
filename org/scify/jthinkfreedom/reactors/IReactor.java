@@ -10,10 +10,4 @@ package org.scify.jthinkfreedom.reactors;
  */
 public interface IReactor {
     public void react();
-//    public void leftClick();
-//    public void rightClick();
-//    public void middleClick();
-//    public void rollDown();
-//    public void rollUp();
-//    public void pressKey(String sKey);
 }

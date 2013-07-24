@@ -16,6 +16,8 @@ import gr.demokritos.iit.jinsect.documentModel.representations.DocumentNGramGrap
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.scify.jthinkfreedom.reactors.IReactor;
 
 /**
@@ -105,8 +107,9 @@ public class NetworkGraphSensor extends SensorAdapter<DocumentNGramGraph> {
     }
     
     public NetworkGraphSensor() {
-        if (sCameraUrl == null)
-            sCameraUrl = "http://localhost:80/cam";
+        if (sCameraUrl == null) {
+            sCameraUrl = "http://localhost:8080";
+        }
         initClassifier();
         
     }
@@ -121,13 +124,14 @@ public class NetworkGraphSensor extends SensorAdapter<DocumentNGramGraph> {
         DocumentNGramGraph dgRes = new DocumentNGramGraph();
         long curUpdate = new Date().getTime();
         // Once every 1/10sec
-        if (curUpdate - lastUpdate < 100)
+        if (curUpdate - lastUpdate < 100) {
             return null;
+        }
         try {
             grayImage  = opencv_core.IplImage.create(grabbedImage.width(),   grabbedImage.height(),   IPL_DEPTH_8U, 1);
             smallImage = opencv_core.IplImage.create(grabbedImage.width()/divider, grabbedImage.height()/divider, IPL_DEPTH_8U, 1);
             stop = false;
-//            while (!stop && (grabbedImage = grabber.grab()) != null) {
+
             if (!stop && (grabbedImage = grabber.grab()) != null) {
                 lastUpdate = curUpdate;
                 cvClearMemStorage(storage);
@@ -170,9 +174,9 @@ public class NetworkGraphSensor extends SensorAdapter<DocumentNGramGraph> {
             }
             System.err.println("Checking " + iCurSensitivity);
         }
-        else
-            // Reset counter
+        else { // Reset Counter
             iCurSensitivity = SensitivityCount;
+        }
     }
     
     @Override
@@ -230,16 +234,10 @@ public class NetworkGraphSensor extends SensorAdapter<DocumentNGramGraph> {
                 grabber.setImageHeight(getHeight());
                 grabber.start();
                 grabbedImage = grabber.grab();
-            } catch (Exception e) {
-//                if (grabber != null) grabber.release();
-//                grabber = new OpenCVFrameGrabber(0);
-//                grabber.setImageWidth(getWidth());
-//                grabber.setImageHeight(getHeight());
-//                grabber.start();
-//                grabbedImage = grabber.grab();
-                e.printStackTrace();
-                this.exception = e;
-                return;
+            } catch (Exception ex) {
+                Logger.getLogger(
+                    NetworkGraphSensor.class.getName()).log(Level.SEVERE, null, ex);
+                this.exception = ex;
             }
     }
 

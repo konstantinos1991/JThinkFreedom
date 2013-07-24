@@ -25,12 +25,15 @@ public class TCPReactorClient extends LinkedList<Pair<String,Integer>> implement
             try {
                 // Connect to signal reaction
                 Socket sTmp = new Socket(pServerInfo.getFirst(), pServerInfo.getSecond());
-                while (sTmp.isConnected())
+                
+                while (sTmp.isConnected()) {
                     try {
                        Thread.sleep(100);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(TCPReactorClient.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                }
+                
             } catch (UnknownHostException ex) {
                 Logger.getLogger(TCPReactorClient.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {

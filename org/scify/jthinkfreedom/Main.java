@@ -25,7 +25,7 @@ import org.scify.jthinkfreedom.stimuli.LeftEyeClosedStimulus;
 public class Main {
     public static void main(String[] saArgs) {
         ISensor<opencv_core.IplImage> sSensor;
-        if (saArgs.length > 0)
+        if (saArgs.length > 0) {
             try {
                 System.err.println("Trying local capture..." + saArgs[0]);
                 sSensor = new WebcamSensor(Integer.parseInt(saArgs[0]));
@@ -33,6 +33,7 @@ public class Main {
                 System.err.println("Trying for network capture..." + saArgs[0]);
                 sSensor = new NetworkImageSensor(saArgs[0]);
             }
+        }
         else {
             sSensor = new WebcamSensor(0);
                 System.err.println("Webcam default (0).");
@@ -43,7 +44,7 @@ public class Main {
         try {
             sSensor.start();
         } catch (Exception ex) {
-            Logger.getLogger(NetworkGraphSensor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(WebcamSensor.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         // Connect sensor to reactor and stimulus
@@ -64,13 +65,15 @@ public class Main {
         while (true) {
             // Canvas
             iToRender = sLeftClosedStimulus.getGrabbedImage();
-            if(iToRender!=null)
+            if(iToRender!=null) {
                 win.showImage(iToRender);
+            }
             
             Thread.yield();
             // Break after 90 seconds
-            if (new Date().getTime() - dStart.getTime() > 90000)
+            if (new Date().getTime() - dStart.getTime() > 90000) {
                 break;
+            }
         }
         
         sSensor.stop();

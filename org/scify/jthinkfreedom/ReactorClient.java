@@ -33,7 +33,7 @@ public class ReactorClient {
         int iServerPort = Integer.valueOf(utils.getSwitch(hSwitches, "serverPort", "25100"));
         
         ISensor<opencv_core.IplImage> sSensor;
-        if (sCamURL.length() > 0)
+        if (sCamURL.length() > 0) {
             try {
                 System.err.println("Trying for network capture..." + sCamURL);
                 sSensor = new NetworkImageSensor(sCamURL);
@@ -42,6 +42,7 @@ public class ReactorClient {
                 e.printStackTrace(System.err);
                 return;
             }
+        }
         else {
             try {
                 sSensor = new WebcamSensor(iCamNo);
@@ -74,12 +75,14 @@ public class ReactorClient {
         
         while (true) {
             opencv_core.IplImage iToRender = sSensor.getData();
-            if (iToRender != null)
+            if (iToRender != null) {
                 win.showImage(iToRender);
+            }
    
             // Break after 30 seconds
-            if (new Date().getTime() - dStart.getTime() > 30000)
+            if (new Date().getTime() - dStart.getTime() > 30000) {
                 break;
+            }
         }
         
         sSensor.stop();

@@ -23,8 +23,9 @@ public class NetworkImageSensor extends SensorAdapter<IplImage> implements Runna
     Thread tDataReader;
     
     public NetworkImageSensor() {
-        if (sCameraUrl == null)
+        if (sCameraUrl == null) {
             sCameraUrl = "http://localhost:8080";
+        }
     }
     
     public NetworkImageSensor(String sCameraUrl) {
@@ -66,9 +67,9 @@ public class NetworkImageSensor extends SensorAdapter<IplImage> implements Runna
         // Stop data reader thread
         bRunning = false;
         try {
-            if (tDataReader != null)
-                // Wait for its completion
-                tDataReader.join();
+            if (tDataReader != null) {
+                tDataReader.join(); // Wait for it's completion
+            }
         } catch (InterruptedException ex) {
             Logger.getLogger(
                     NetworkImageSensor.class.getName()).log(Level.SEVERE, null, ex);

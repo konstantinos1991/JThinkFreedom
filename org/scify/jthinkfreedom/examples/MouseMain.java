@@ -45,8 +45,9 @@ public class MouseMain {
         Date dStart = new Date();
         while(true) {
             //run for 15 seconds
-            if (new Date().getTime() - dStart.getTime() > 15000)
+            if (new Date().getTime() - dStart.getTime() > 15000) {
                 break;
+            }
             Thread.yield();
         }
         

@@ -14,8 +14,8 @@ import org.scify.jthinkfreedom.reactors.IReactor;
  * @author ggianna
  */
 public abstract class StimulusAdapter<T> implements IStimulus<T> {
-    protected List<IReactor> lReactors = new LinkedList<IReactor>();
-    protected List<ISensor<T>> lSensors = new LinkedList<ISensor<T>>();
+    protected List<IReactor> lReactors = new LinkedList<>();
+    protected List<ISensor<T>> lSensors = new LinkedList<>();
     protected boolean bRunning;
     
     @Override
@@ -40,12 +40,12 @@ public abstract class StimulusAdapter<T> implements IStimulus<T> {
 
     @Override
     public List<IReactor> listReactors() {
-        return new LinkedList<IReactor>(lReactors);
+        return new LinkedList<>(lReactors);
     }
 
     @Override
     public List<ISensor<T>> listSensors() {
-        return new LinkedList<ISensor<T>>(lSensors);
+        return new LinkedList<>(lSensors);
     }
 
     @Override
@@ -82,8 +82,9 @@ public abstract class StimulusAdapter<T> implements IStimulus<T> {
 
             @Override
             public void run() {
-                for (IReactor iCur : lReactors)
+                for (IReactor iCur : lReactors) {
                     iCur.react();
+                }
             }
         });
         t.start();
