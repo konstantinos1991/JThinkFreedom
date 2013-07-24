@@ -8,8 +8,8 @@ import gr.demokritos.iit.jinsect.utils;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.scify.jthinkfreedom.reactors.DoubleClickReactor;
 import org.scify.jthinkfreedom.reactors.IReactor;
-import org.scify.jthinkfreedom.reactors.RightClickReactor;
 import org.scify.jthinkfreedom.reactors.TCPReactorServer;
 
 /**
@@ -20,19 +20,19 @@ public class ReactorServer {
     public static void main(String[] saArgs) {
         Hashtable hSwitches = utils.parseCommandLineSwitches(saArgs);
         // Port number for server
-        int iPortNo = 25100;
+        int iPortNo = 4444;
         try {
             iPortNo = Integer.valueOf(utils.getSwitch(hSwitches, "port", "4444"));
         }
         catch (NumberFormatException nfe) {
             // Use default
-            System.err.println("Malformed port number: " + utils.getSwitch(hSwitches, "port", "25100"));
+            System.err.println("Malformed port number: " + utils.getSwitch(hSwitches, "port", "4444"));
             
         }
         System.err.println("Using port number: " + iPortNo);
         // Class for reactor
         String sReactorClass = utils.getSwitch(hSwitches, "reactor", 
-                RightClickReactor.class.getCanonicalName());
+                DoubleClickReactor.class.getCanonicalName());
         IReactor rReactor;
         try {
             try {
