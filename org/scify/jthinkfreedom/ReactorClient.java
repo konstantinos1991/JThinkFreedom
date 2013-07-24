@@ -13,14 +13,11 @@ import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
-import org.scify.jthinkfreedom.reactors.LeftClickReactor;
-import org.scify.jthinkfreedom.reactors.RightClickReactor;
 import org.scify.jthinkfreedom.reactors.TCPReactorClient;
 import org.scify.jthinkfreedom.sensors.ISensor;
 import org.scify.jthinkfreedom.sensors.NetworkGraphSensor;
 import org.scify.jthinkfreedom.sensors.NetworkImageSensor;
 import org.scify.jthinkfreedom.sensors.WebcamSensor;
-import org.scify.jthinkfreedom.stimuli.HeadUpStimulus;
 import org.scify.jthinkfreedom.stimuli.LeftEyeClosedStimulus;
 
 /**
@@ -62,15 +59,10 @@ public class ReactorClient {
         } catch (Exception ex) {
             Logger.getLogger(NetworkGraphSensor.class.getName()).log(Level.SEVERE, null, ex);
         }
-        // Connect sensor to reactor and stimulus
-//        HeadUpStimulus sHeadUp = new HeadUpStimulus();
-//        sHeadUp.setTriggerOffset(10);
-//        sSensor.addStimulus(sHeadUp);
-//        sHeadUp.addSensor(sSensor);
         
         TCPReactorClient trc = new TCPReactorClient();
         // Add TCP reactor server data to TCP reactor client
-        trc.add(new Pair<String, Integer>(sServerIP, iServerPort));
+        trc.add(new Pair<>(sServerIP, iServerPort));
         LeftEyeClosedStimulus sLeftClosedStimulus = new LeftEyeClosedStimulus();
         sSensor.addStimulus(sLeftClosedStimulus);
         sLeftClosedStimulus.addSensor(sSensor);
@@ -84,9 +76,7 @@ public class ReactorClient {
             opencv_core.IplImage iToRender = sSensor.getData();
             if (iToRender != null)
                 win.showImage(iToRender);
-//            else
-//                System.err.println("Warning: no data returned (null)");
-            
+   
             // Break after 30 seconds
             if (new Date().getTime() - dStart.getTime() > 30000)
                 break;

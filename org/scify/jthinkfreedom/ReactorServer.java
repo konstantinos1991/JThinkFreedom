@@ -8,7 +8,6 @@ import gr.demokritos.iit.jinsect.utils;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.scify.jthinkfreedom.reactors.DoubleClickReactor;
 import org.scify.jthinkfreedom.reactors.IReactor;
 import org.scify.jthinkfreedom.reactors.RightClickReactor;
 import org.scify.jthinkfreedom.reactors.TCPReactorServer;
@@ -23,7 +22,7 @@ public class ReactorServer {
         // Port number for server
         int iPortNo = 25100;
         try {
-            iPortNo = Integer.valueOf(utils.getSwitch(hSwitches, "port", "25100"));
+            iPortNo = Integer.valueOf(utils.getSwitch(hSwitches, "port", "4444"));
         }
         catch (NumberFormatException nfe) {
             // Use default
@@ -33,7 +32,7 @@ public class ReactorServer {
         System.err.println("Using port number: " + iPortNo);
         // Class for reactor
         String sReactorClass = utils.getSwitch(hSwitches, "reactor", 
-                DoubleClickReactor.class.getCanonicalName());
+                RightClickReactor.class.getCanonicalName());
         IReactor rReactor;
         try {
             try {

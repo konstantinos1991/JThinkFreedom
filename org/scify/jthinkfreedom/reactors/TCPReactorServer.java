@@ -25,8 +25,8 @@ public class TCPReactorServer implements Runnable {
     
     public TCPReactorServer(int iPort) {
         try {
-            ssListener = new ServerSocket(iPort,5);
-            lReactors = new LinkedList<IReactor>();
+            ssListener = new ServerSocket(iPort);
+            lReactors = new LinkedList<>();
         } catch (IOException ex) {
             Logger.getLogger(TCPReactorServer.class.getName()).log(Level.SEVERE, null, ex);
         }

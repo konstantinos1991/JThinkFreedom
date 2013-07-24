@@ -6,11 +6,12 @@ package org.scify.jthinkfreedom;
 
 import com.googlecode.javacv.CanvasFrame;
 import com.googlecode.javacv.cpp.opencv_core;
+import gr.demokritos.iit.jinsect.structs.Pair;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
-import org.scify.jthinkfreedom.reactors.RightClickReactor;
+import org.scify.jthinkfreedom.reactors.TCPReactorClient;
 import org.scify.jthinkfreedom.sensors.NetworkGraphSensor;
 import org.scify.jthinkfreedom.sensors.WebcamSensor;
 import org.scify.jthinkfreedom.sensors.ISensor;
@@ -44,17 +45,15 @@ public class Main {
         } catch (Exception ex) {
             Logger.getLogger(NetworkGraphSensor.class.getName()).log(Level.SEVERE, null, ex);
         }
-        // Connect sensor to reactor and stimulus
-        //HeadUpStimulus sHeadUp = new HeadUpStimulus();
-        //sHeadUp.setTriggerOffset(10);
-        //sSensor.addStimulus(sHeadUp);
-        //sHeadUp.addSensor(sSensor);
-        //sHeadUp.addReactor(new RightClickReactor());
         
+        // Connect sensor to reactor and stimulus
         LeftEyeClosedStimulus sLeftClosedStimulus = new LeftEyeClosedStimulus();
         sSensor.addStimulus(sLeftClosedStimulus);
         sLeftClosedStimulus.addSensor(sSensor);
-        sLeftClosedStimulus.addReactor(new RightClickReactor());
+        //sLeftClosedStimulus.addReactor(new RightClickReactor());
+        TCPReactorClient rReactor = new TCPReactorClient();
+        rReactor.add(new Pair("192.168.1.38", 4444));
+        sLeftClosedStimulus.addReactor(rReactor);
         
         // Canvas
         final CanvasFrame win = new CanvasFrame("Source");
