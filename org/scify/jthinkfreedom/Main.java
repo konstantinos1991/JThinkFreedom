@@ -51,12 +51,12 @@ public class Main {
         LeftEyeClosedStimulus sLeftClosedStimulus = new LeftEyeClosedStimulus();
         sSensor.addStimulus(sLeftClosedStimulus);
         sLeftClosedStimulus.addSensor(sSensor);
-        //sLeftClosedStimulus.addReactor(new RightClickReactor());
+        sLeftClosedStimulus.addReactor(new RightClickReactor());
         
         // FOR SOCKET COMMUNICATION
-        TCPReactorClient rReactor = new TCPReactorClient();
-        rReactor.add(new Pair("83.212.112.152", 4444));
-        sLeftClosedStimulus.addReactor(rReactor);
+        //TCPReactorClient rReactor = new TCPReactorClient();
+        //rReactor.add(new Pair("83.212.112.152", 4444));
+        //sLeftClosedStimulus.addReactor(rReactor);
         ///////////////////////////
         
         // Canvas

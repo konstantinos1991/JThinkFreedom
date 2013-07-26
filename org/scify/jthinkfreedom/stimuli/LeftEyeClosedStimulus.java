@@ -20,6 +20,9 @@ import org.scify.jthinkfreedom.stimuli.haarModels.HaarCascadeModel;
  * @author ggianna
  */
 public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage> {
+    
+    private static final int BOTH_EYES = 2;
+    private static final int ONE_EYE_CLOSED = 1;
 
     protected opencv_objdetect.CvHaarClassifierCascade openClassifier = null;
     protected opencv_core.IplImage grabbedImage = null, grayImage = null, smallImage = null;
@@ -31,7 +34,7 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
     
     private long lastUpdate = 0, lastReaction = 0;
     private long reactionTimer = 300; // In milliseconds
-            
+    
     protected CvRect lastLeftRect = null, lastRightRect = null;
     
     protected opencv_core.CvMemStorage storage = null;
@@ -87,54 +90,41 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
         lastUpdate = new Date().getTime();
 
         // For each source
-        for (ISensor<opencv_core.IplImage> isCurSensor : lSensors) {            
-            // Get latest data from sensor
-            grabbedImage = isCurSensor.getData();
-             
-            // Initialize last left rectangle with size 0x0
-            lastLeftRect = new CvRect(0, 0, 0, 0);
+        for (ISensor<opencv_core.IplImage> isCurSensor : lSensors) {
             
-            // Initialize last right rectangle with size MAX_INTxMAX_INT
-            lastRightRect = new CvRect(Integer.MAX_VALUE, Integer.MAX_VALUE, 
-                    Integer.MAX_VALUE, Integer.MAX_VALUE);
-            
-            // Search for an eye at the left of the previous found
-            openEye = openEyeSearch();
+            getBothEyes(isCurSensor); // Get the coordinates of the eyes
             int total = openEye.total();
-            for(int i=0; i<total; i++) {
-                CvRect r = new CvRect(cvGetSeqElem(openEye, i));
-                // If current eye is at the left of the previous one (mirrored)
-                if(r.x() > lastLeftRect.x()) {
-                    lastLeftRect = r;
-                } //make it our new current left eye
-                
-                // If current eye is at the right of the previous one (mirrored)
-                if(r.x() < lastRightRect.x()) {
-                    lastRightRect = r;
-                } //make it our new current left eye
-            }
             
-            // Take snapshot
-            if(total == 2) {
+            // In the current snapshot
+            do {
+                getBothEyes(isCurSensor); // Get the coordinates of the eyes
+            
+                // DEBUG LINES
                 // Draw a green rectangle around left eye
-                cvDrawRect(grabbedImage,
-                    new CvPoint(lastLeftRect.x()*divider, lastLeftRect.y()*divider),
-                    new CvPoint((lastLeftRect.x()+lastLeftRect.width())*divider,
-                        (lastLeftRect.y()+lastLeftRect.height())*divider),
-                    CvScalar.GREEN, 2, CV_AA, 0);
-                
-                cvSaveImage("eye.jpg", grabbedImage);
+                //cvDrawRect(grabbedImage,
+                //    new CvPoint(lastLeftRect.x()*divider, lastLeftRect.y()*divider),
+                //    new CvPoint((lastLeftRect.x()+lastLeftRect.width())*divider,
+                //        (lastLeftRect.y()+lastLeftRect.height())*divider),
+                //    CvScalar.GREEN, 2, CV_AA, 0);
+                // Draw a red rectangle around right eye
+                //cvDrawRect(grabbedImage,
+                //    new CvPoint(lastRightRect.x()*divider, lastRightRect.y()*divider),
+                //    new CvPoint((lastRightRect.x()+lastRightRect.width())*divider,
+                //        (lastRightRect.y()+lastRightRect.height())*divider),
+                //    CvScalar.RED, 2, CV_AA, 0);
+                //cvSaveImage("eye.jpg", grabbedImage);
+                //////////////
                 
                 // Retake sample
                 openLeftEye = openEyeSearch();
                 int newTotal = openLeftEye.total();
                 // If the number of total eyes becomes 1
                 // one of them must be closed
-                while(newTotal == 1) {
+                if(newTotal == ONE_EYE_CLOSED) {
                     CvRect r = new CvRect(cvGetSeqElem(openLeftEye, 0));
                     
                     // If that eye is closer to the right one, call the reactors
-                    if(Math.abs(r.x()-lastLeftRect.x()) > Math.abs(r.x()-lastRightRect.x())) {
+                    if(Math.abs(r.x()-lastLeftRect.x()) >= Math.abs(r.x()-lastRightRect.x())) {
                         // Sensitivity parameter
                         if (new Date().getTime() - lastReaction < reactionTimer) {
                             return;
@@ -149,10 +139,11 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
                     openLeftEye = openEyeSearch();
                     newTotal = openLeftEye.total();
                 }
-            }
-            else {
-                iCurSensitivity = SensitivityCount;
-            } // Reset eye sensitivity
+                else{ // If there was no blink
+                    iCurSensitivity = SensitivityCount; // Reset eye sensitivity
+                    return;
+                }
+            } while(total == BOTH_EYES);
         }
     }
 
@@ -168,6 +159,35 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
         
     }
 
+    // Stores the coordinates of both eyes the current sensor has detected
+    protected void getBothEyes(ISensor<opencv_core.IplImage> curSensor) {
+        // Get latest data from sensor
+        grabbedImage = curSensor.getData();
+
+        // Initialize last left rectangle with size 0x0
+        lastLeftRect = new CvRect(0, 0, 0, 0);
+
+        // Initialize last right rectangle with size MAX_INTxMAX_INT
+        lastRightRect = new CvRect(Integer.MAX_VALUE, Integer.MAX_VALUE, 
+                Integer.MAX_VALUE, Integer.MAX_VALUE);
+
+        // Search for an eye at the left of the previous found
+        openEye = openEyeSearch();
+        
+        for(int i=0; i<openEye.total(); i++) {
+            CvRect r = new CvRect(cvGetSeqElem(openEye, i));
+            // If current eye is at the left of the previous one (mirrored)
+            if(r.x() > lastLeftRect.x()) {
+                lastLeftRect = r;
+            } //make it our new current left eye
+
+            // If current eye is at the right of the previous one (mirrored)
+            if(r.x() < lastRightRect.x()) {
+                lastRightRect = r;
+            } //make it our new current right eye
+        }
+    }
+    
     protected CvSeq openEyeSearch() { // Returns how many open eyes were detected
         grayImage = opencv_core.IplImage.create(cvGetSize(grabbedImage), IPL_DEPTH_8U, 1);
         cvCvtColor(grabbedImage, grayImage, CV_BGR2GRAY);
