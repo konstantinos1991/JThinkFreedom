@@ -33,7 +33,7 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
     protected int divider = 1; // To scale the image
     
     private long lastUpdate = 0, lastReaction = 0;
-    private long reactionTimer = 300; // In milliseconds
+    private long reactionTimer = 100; // In milliseconds
     
     protected CvRect lastLeftRect = null, lastRightRect = null;
     
@@ -101,18 +101,18 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
             
                 // DEBUG LINES
                 // Draw a green rectangle around left eye
-                //cvDrawRect(grabbedImage,
-                //    new CvPoint(lastLeftRect.x()*divider, lastLeftRect.y()*divider),
-                //    new CvPoint((lastLeftRect.x()+lastLeftRect.width())*divider,
-                //        (lastLeftRect.y()+lastLeftRect.height())*divider),
-                //    CvScalar.GREEN, 2, CV_AA, 0);
+                cvDrawRect(grabbedImage,
+                    new CvPoint(lastLeftRect.x()*divider, lastLeftRect.y()*divider),
+                    new CvPoint((lastLeftRect.x()+lastLeftRect.width())*divider,
+                        (lastLeftRect.y()+lastLeftRect.height())*divider),
+                    CvScalar.GREEN, 2, CV_AA, 0);
                 // Draw a red rectangle around right eye
                 //cvDrawRect(grabbedImage,
                 //    new CvPoint(lastRightRect.x()*divider, lastRightRect.y()*divider),
                 //    new CvPoint((lastRightRect.x()+lastRightRect.width())*divider,
                 //        (lastRightRect.y()+lastRightRect.height())*divider),
                 //    CvScalar.RED, 2, CV_AA, 0);
-                //cvSaveImage("eye.jpg", grabbedImage);
+                cvSaveImage("eye.jpg", grabbedImage);
                 //////////////
                 
                 // Retake sample
@@ -139,8 +139,7 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
                     openLeftEye = openEyeSearch();
                     newTotal = openLeftEye.total();
                 }
-                else{ // If there was no blink
-                    iCurSensitivity = SensitivityCount; // Reset eye sensitivity
+                else {
                     return;
                 }
             } while(total == BOTH_EYES);
