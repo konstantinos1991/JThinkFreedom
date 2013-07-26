@@ -25,12 +25,12 @@ public class LeftEyeClosedStimulus extends StimulusAdapter<opencv_core.IplImage>
     protected opencv_core.IplImage grabbedImage = null, grayImage = null, smallImage = null;
     protected opencv_core.CvSeq openEye = null, openLeftEye = null;
     protected Exception exception = null;
-    protected int SensitivityCount = 4; // Frames before reaction
+    protected int SensitivityCount = 2; // Frames before reaction
     private int iCurSensitivity = SensitivityCount;
     protected int divider = 1; // To scale the image
     
     private long lastUpdate = 0, lastReaction = 0;
-    private long reactionTimer = 200; // In milliseconds
+    private long reactionTimer = 300; // In milliseconds
             
     protected CvRect lastLeftRect = null, lastRightRect = null;
     

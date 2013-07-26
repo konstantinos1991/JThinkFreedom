@@ -13,7 +13,7 @@ import java.util.logging.Logger;
  *
  * @author ggianna
  */
-public class RightClickReactor extends ReactorAdapter {
+public class RightClickReactor extends ReactorAdapter  {
 
     @Override
     public void react() {

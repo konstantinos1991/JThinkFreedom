@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import org.scify.jthinkfreedom.reactors.RightClickReactor;
 import org.scify.jthinkfreedom.reactors.TCPReactorClient;
 import org.scify.jthinkfreedom.sensors.WebcamSensor;
 import org.scify.jthinkfreedom.sensors.ISensor;
@@ -51,9 +52,12 @@ public class Main {
         sSensor.addStimulus(sLeftClosedStimulus);
         sLeftClosedStimulus.addSensor(sSensor);
         //sLeftClosedStimulus.addReactor(new RightClickReactor());
+        
+        // FOR SOCKET COMMUNICATION
         TCPReactorClient rReactor = new TCPReactorClient();
-        rReactor.add(new Pair("192.168.1.38", 4444));
+        rReactor.add(new Pair("83.212.112.152", 4444));
         sLeftClosedStimulus.addReactor(rReactor);
+        ///////////////////////////
         
         // Canvas
         final CanvasFrame win = new CanvasFrame("Source");
