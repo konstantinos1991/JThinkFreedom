@@ -31,8 +31,8 @@ import org.scify.jthinkfreedom.stimuli.haarModels.HaarCascadeModel;
 public class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
 
     // Constants
-    protected static final int BOTH_EYES_CLOSED = 2;
-    protected static final int ONE_EYE_CLOSED = 1;
+    protected static final int BOTH_EYES = 2;
+    protected static final int ONE_EYE = 1;
     protected static final int SCALE = 1;
     
     protected opencv_objdetect.CvHaarClassifierCascade eyeClassifier = null;
