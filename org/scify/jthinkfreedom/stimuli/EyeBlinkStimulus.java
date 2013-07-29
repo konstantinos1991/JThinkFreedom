@@ -38,6 +38,7 @@ public class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
     
     protected opencv_objdetect.CvHaarClassifierCascade eyeClassifier = null, faceClassifier = null;
     protected opencv_core.IplImage grabbedImage = null, grayImage = null, smallImage = null;
+    protected opencv_core.IplImage faceImage = null; // To zoom in the face
     protected opencv_core.CvSeq eyesDetected = null, facesDetected = null;
     protected opencv_core.CvMemStorage storage = null;
     // For the eyes
@@ -55,6 +56,10 @@ public class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
 
     public IplImage getGrabbedImage() {
         return grabbedImage;
+    }
+    
+    public IplImage getFaceImage() {
+        return faceImage;
     }
     
     private void initClassifier() {
@@ -103,13 +108,13 @@ public class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
         }
     }
     
-    // Returns a sequence of open eyes in the current frame
-    protected opencv_core.CvSeq detectOpenEyes() {
-        grayImage = opencv_core.IplImage.create(cvGetSize(grabbedImage), IPL_DEPTH_8U, 1);
-        cvCvtColor(grabbedImage, grayImage, CV_BGR2GRAY);
+    // Returns a sequence of open eyes in the specified image
+    protected opencv_core.CvSeq detectOpenEyes(IplImage curImage) {
+        grayImage = opencv_core.IplImage.create(cvGetSize(curImage), IPL_DEPTH_8U, 1);
+        cvCvtColor(curImage, grayImage, CV_BGR2GRAY);
         
-        smallImage = opencv_core.IplImage.create(grabbedImage.width()/SCALE,
-                grabbedImage.height()/SCALE, IPL_DEPTH_8U, 1);
+        smallImage = opencv_core.IplImage.create(curImage.width()/SCALE,
+                curImage.height()/SCALE, IPL_DEPTH_8U, 1);
         
         cvResize(grayImage, smallImage, CV_INTER_LINEAR);
         
@@ -126,13 +131,13 @@ public class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
         return openEyes;
     }
     
-    // Returns a sequence of faces in the current frame
-    protected opencv_core.CvSeq detectFaces() {
-        grayImage = opencv_core.IplImage.create(cvGetSize(grabbedImage), IPL_DEPTH_8U, 1);
-        cvCvtColor(grabbedImage, grayImage, CV_BGR2GRAY);
+    // Returns a sequence of faces in the specified image
+    protected opencv_core.CvSeq detectFaces(IplImage curImage) {
+        grayImage = opencv_core.IplImage.create(cvGetSize(curImage), IPL_DEPTH_8U, 1);
+        cvCvtColor(curImage, grayImage, CV_BGR2GRAY);
         
-        smallImage = opencv_core.IplImage.create(grabbedImage.width()/SCALE,
-                grabbedImage.height()/SCALE, IPL_DEPTH_8U, 1);
+        smallImage = opencv_core.IplImage.create(curImage.width()/SCALE,
+                curImage.height()/SCALE, IPL_DEPTH_8U, 1);
         
         cvResize(grayImage, smallImage, CV_INTER_LINEAR);
         

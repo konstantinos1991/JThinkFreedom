@@ -66,7 +66,7 @@ public class Main {
         
         while (true) {
             // Canvas
-            iToRender = sLeftBlinkStimulus.getGrabbedImage();
+            iToRender = sLeftBlinkStimulus.getFaceImage();
             if(iToRender!=null) {
                 win.showImage(iToRender);
             }
