@@ -6,17 +6,15 @@ package org.scify.jthinkfreedom;
 
 import com.googlecode.javacv.CanvasFrame;
 import com.googlecode.javacv.cpp.opencv_core;
-import gr.demokritos.iit.jinsect.structs.Pair;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import org.scify.jthinkfreedom.reactors.RightClickReactor;
-import org.scify.jthinkfreedom.reactors.TCPReactorClient;
 import org.scify.jthinkfreedom.sensors.WebcamSensor;
 import org.scify.jthinkfreedom.sensors.ISensor;
 import org.scify.jthinkfreedom.sensors.NetworkImageSensor;
-import org.scify.jthinkfreedom.stimuli.LeftEyeClosedStimulus;
+import org.scify.jthinkfreedom.stimuli.LeftEyeBlinkStimulus;
 
 /**
  *
@@ -48,15 +46,16 @@ public class Main {
         }
         
         // Connect sensor to reactor and stimulus
-        LeftEyeClosedStimulus sLeftClosedStimulus = new LeftEyeClosedStimulus();
-        sSensor.addStimulus(sLeftClosedStimulus);
-        sLeftClosedStimulus.addSensor(sSensor);
-        sLeftClosedStimulus.addReactor(new RightClickReactor());
+        LeftEyeBlinkStimulus sLeftBlinkStimulus = new LeftEyeBlinkStimulus();
+        sSensor.addStimulus(sLeftBlinkStimulus);
+        sLeftBlinkStimulus.addSensor(sSensor);
+        sLeftBlinkStimulus.addReactor(new RightClickReactor());
         
         // FOR SOCKET COMMUNICATION
         //TCPReactorClient rReactor = new TCPReactorClient();
         //rReactor.add(new Pair("83.212.112.152", 4444));
-        //sLeftClosedStimulus.addReactor(rReactor);
+        //rReactor.add(new Pair("192.168.1.65", 4444));
+        //sLeftBlinkStimulus.addReactor(rReactor);
         ///////////////////////////
         
         // Canvas
@@ -67,7 +66,7 @@ public class Main {
         
         while (true) {
             // Canvas
-            iToRender = sLeftClosedStimulus.getGrabbedImage();
+            iToRender = sLeftBlinkStimulus.getGrabbedImage();
             if(iToRender!=null) {
                 win.showImage(iToRender);
             }
