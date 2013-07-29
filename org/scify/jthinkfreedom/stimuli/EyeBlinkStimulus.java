@@ -2,6 +2,7 @@ package org.scify.jthinkfreedom.stimuli;
 
 import com.googlecode.javacpp.Loader;
 import com.googlecode.javacv.cpp.opencv_core;
+import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
 import static com.googlecode.javacv.cpp.opencv_core.IPL_DEPTH_8U;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
@@ -35,18 +36,21 @@ public class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
     protected static final int ONE_EYE = 1;
     protected static final int SCALE = 1;
     
-    protected opencv_objdetect.CvHaarClassifierCascade eyeClassifier = null;
+    protected opencv_objdetect.CvHaarClassifierCascade eyeClassifier = null, faceClassifier = null;
     protected opencv_core.IplImage grabbedImage = null, grayImage = null, smallImage = null;
-    protected opencv_core.CvSeq eyesDetected = null;
+    protected opencv_core.CvSeq eyesDetected = null, facesDetected = null;
     protected opencv_core.CvMemStorage storage = null;
+    // For the eyes
     protected opencv_core.CvRect lastLeftRect = null, lastRightRect = null;
+    // For the faces
+    protected opencv_core.CvRect faceRect = null;
     
     protected long lastUpdate = 0;
     protected int updateTimer = 100;
 
     public EyeBlinkStimulus() {
         super();
-        initClassifier();
+        initClassifier(); // For eye and face detection
     }
 
     public IplImage getGrabbedImage() {
@@ -60,15 +64,18 @@ public class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
             
             // Load the classifier files from Java resources.
             String openClassfierName = "haarcascade_eye.xml";
+            String faceClassfierName = "haarcascade_frontalface_alt.xml";
             
             File openClassifierFile = new File(HaarCascadeModel.class.getResource(openClassfierName).toURI());
-            if (openClassifierFile.length() <= 0) {
+            File faceClassifierFile = new File(HaarCascadeModel.class.getResource(faceClassfierName).toURI());
+            if (openClassifierFile.length() <= 0 || faceClassifierFile.length() <= 0) {
                 throw new IOException("Could not extract \"" + openClassfierName + "\" from Java resources.");
             }
 
             eyeClassifier = new opencv_objdetect.CvHaarClassifierCascade(cvLoad(openClassifierFile.getAbsolutePath())); 
+            faceClassifier = new opencv_objdetect.CvHaarClassifierCascade(cvLoad(faceClassifierFile.getAbsolutePath())); 
             
-            if (eyeClassifier.isNull()) {
+            if (eyeClassifier.isNull() || faceClassifier.isNull()) {
                 throw new IOException("Could not load the classifier files.");
             }
 
@@ -119,6 +126,29 @@ public class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
         return openEyes;
     }
     
+    // Returns a sequence of faces in the current frame
+    protected opencv_core.CvSeq detectFaces() {
+        grayImage = opencv_core.IplImage.create(cvGetSize(grabbedImage), IPL_DEPTH_8U, 1);
+        cvCvtColor(grabbedImage, grayImage, CV_BGR2GRAY);
+        
+        smallImage = opencv_core.IplImage.create(grabbedImage.width()/SCALE,
+                grabbedImage.height()/SCALE, IPL_DEPTH_8U, 1);
+        
+        cvResize(grayImage, smallImage, CV_INTER_LINEAR);
+        
+        // Equalize the small grayscale
+        cvEqualizeHist(smallImage, smallImage);
+        
+        // Create temp storage, used during object detection
+        storage = opencv_core.CvMemStorage.create();
+        
+        // Determine whether open eye has been found
+        opencv_core.CvSeq faces = cvHaarDetectObjects(smallImage, faceClassifier, storage, 1.2, 3, CV_HAAR_DO_CANNY_PRUNING);
+        
+        cvClearMemStorage(storage);
+        return faces;
+    }
+    
     // Returns the rectangle which containst the leftmost eye
     // in the current CvSeq (which contains all open eyes)
     protected CvRect getLeftmostEye() {
@@ -164,5 +194,39 @@ public class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
             System.err.println("Has detectOpenEyes() been called?");
             return right;
         }
+    }
+    
+    // Returns the most central face in the image
+    protected CvRect getCentralFace() {
+        CvRect face = new CvRect(0, 0, 0, 0);
+        CvPoint faceCenter = new CvPoint(0, 0);
+        try {
+            // For every face detected
+            for(int i=0; i<facesDetected.total(); i++) {
+                CvRect r = new CvRect(cvGetSeqElem(facesDetected, i));
+                // Get the center of the current rectangle
+                CvPoint curCenter = getRectangleCenter(r);
+                // If current face is closer to the middle of the screen
+                if(Math.abs(curCenter.x() - getGrabbedImage().width()/2) < 
+                        Math.abs(faceCenter.x() - getGrabbedImage().width()/2) &&
+                        Math.abs(curCenter.y() - getGrabbedImage().height()/2) <
+                        Math.abs(faceCenter.y() - getGrabbedImage().height()/2)) {
+                    // Make it our new central face
+                    face = r;
+                }
+            }
+            return face;
+        }
+        catch(NullPointerException e) {
+            e.printStackTrace(System.err);
+            System.err.println("Has detectFaces() been called?");
+            return face;
+        }
+    }
+    
+    // Return the central point of a rectangle
+    protected CvPoint getRectangleCenter(CvRect r) {
+        return new CvPoint(r.x() + (r.x()+r.width())/2,
+                r.y() + (r.y()+r.height())/2);
     }
 }

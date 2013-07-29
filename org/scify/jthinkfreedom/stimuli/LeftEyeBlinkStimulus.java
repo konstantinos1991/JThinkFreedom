@@ -13,6 +13,7 @@ import static com.googlecode.javacv.cpp.opencv_core.cvDrawRect;
 import static com.googlecode.javacv.cpp.opencv_highgui.cvSaveImage;
 import java.util.Date;
 import org.scify.jthinkfreedom.sensors.ISensor;
+import static org.scify.jthinkfreedom.stimuli.EyeBlinkStimulus.SCALE;
 
 /**
  *
@@ -23,9 +24,9 @@ public class LeftEyeBlinkStimulus extends EyeBlinkStimulus{
     
     //Constants
     private static final int RECT_OFFSET = 20; // Pixels larger
-    private static final int VALIDITY = 5; // Frames that have to be valid to react
+    private static final int VALIDITY = 10; // Frames that have to be valid to react
     
-    protected opencv_core.CvRect previousLeftRect = null, previousRightRect = null;
+    private opencv_core.CvRect previousLeftRect = null, previousRightRect = null;
     
     private int validityCount = 0; // Current validity
     
@@ -78,24 +79,37 @@ public class LeftEyeBlinkStimulus extends EyeBlinkStimulus{
             // Detect all eyes in the current frame
             eyesDetected = detectOpenEyes();
             
+            // Detect all faces in current frame
+            facesDetected = detectFaces();
+            
             // Get rightmost and leftmost eyes
             lastLeftRect = getLeftmostEye();
             lastRightRect = getRightmostEye();
             
+            //Get most central face
+            faceRect = getCentralFace();
+            
             // DEBUG LINES
             // Draw a green rectangle around left eye
-            cvDrawRect(grabbedImage,
-                new CvPoint(lastLeftRect.x()*SCALE, lastLeftRect.y()*SCALE),
-                new CvPoint((lastLeftRect.x()+lastLeftRect.width())*SCALE,
-                    (lastLeftRect.y()+lastLeftRect.height())*SCALE),
-                CvScalar.GREEN, 2, CV_AA, 0);
+            //cvDrawRect(grabbedImage,
+            //    new CvPoint(lastLeftRect.x()*SCALE, lastLeftRect.y()*SCALE),
+            //    new CvPoint((lastLeftRect.x()+lastLeftRect.width())*SCALE,
+            //        (lastLeftRect.y()+lastLeftRect.height())*SCALE),
+            //    CvScalar.GREEN, 2, CV_AA, 0);
             // Draw a red rectangle around right eye
-            cvDrawRect(grabbedImage,
-                new CvPoint(lastRightRect.x()*SCALE, lastRightRect.y()*SCALE),
-                new CvPoint((lastRightRect.x()+lastRightRect.width())*SCALE,
-                    (lastRightRect.y()+lastRightRect.height())*SCALE),
-                CvScalar.RED, 2, CV_AA, 0);
-            cvSaveImage("eye.jpg", grabbedImage);
+            //cvDrawRect(grabbedImage,
+            //    new CvPoint(lastRightRect.x()*SCALE, lastRightRect.y()*SCALE),
+            //    new CvPoint((lastRightRect.x()+lastRightRect.width())*SCALE,
+            //        (lastRightRect.y()+lastRightRect.height())*SCALE),
+            //    CvScalar.RED, 2, CV_AA, 0);
+            // Draw a magenta rectangle around face
+            //cvDrawRect(grabbedImage,
+            //    new CvPoint(faceRect.x()*SCALE, faceRect.y()*SCALE),
+            //    new CvPoint((faceRect.x()+faceRect.width())*SCALE,
+            //        (faceRect.y()+faceRect.height())*SCALE),
+            //    CvScalar.MAGENTA, 2, CV_AA, 0);
+            // Snapshot
+            //cvSaveImage("eye.jpg", grabbedImage);
             //////////////
             
             // If the right and left eye are the same one

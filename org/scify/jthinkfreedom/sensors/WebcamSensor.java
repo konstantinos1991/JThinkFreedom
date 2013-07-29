@@ -21,7 +21,7 @@ public class WebcamSensor extends NetworkImageSensor {
     @Override
     public void start(){
             try {
-                grabber = FrameGrabber.createDefault(this.CameraNo);
+                grabber = FrameGrabber.createDefault(CameraNo);
                 grabber.setImageWidth(getWidth());
                 grabber.setImageHeight(getHeight());
                 grabber.start();
