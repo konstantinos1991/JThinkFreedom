@@ -2,20 +2,24 @@ package org.scify.jthinkfreedom.stimuli;
 
 import com.googlecode.javacpp.Loader;
 import com.googlecode.javacv.cpp.opencv_core;
-import com.googlecode.javacv.cpp.opencv_core.CvPoint;
+import static com.googlecode.javacv.cpp.opencv_core.*;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
+import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import static com.googlecode.javacv.cpp.opencv_core.IPL_DEPTH_8U;
+import static com.googlecode.javacv.cpp.opencv_core.CV_AA;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import static com.googlecode.javacv.cpp.opencv_core.cvClearMemStorage;
+import static com.googlecode.javacv.cpp.opencv_core.cvCopy;
+import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;
 import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
 import static com.googlecode.javacv.cpp.opencv_core.cvGetSize;
 import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
+import static com.googlecode.javacv.cpp.opencv_core.cvResetImageROI;
+import static com.googlecode.javacv.cpp.opencv_core.cvSetImageROI;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2GRAY;
-import static com.googlecode.javacv.cpp.opencv_imgproc.CV_HOUGH_GRADIENT;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_INTER_LINEAR;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvCvtColor;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvEqualizeHist;
-import static com.googlecode.javacv.cpp.opencv_imgproc.cvHoughCircles;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvResize;
 import com.googlecode.javacv.cpp.opencv_objdetect;
 import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNING;
@@ -26,17 +30,19 @@ import java.net.URISyntaxException;
 import java.util.Date;
 import org.scify.jthinkfreedom.sensors.ISensor;
 import org.scify.jthinkfreedom.stimuli.haarModels.HaarCascadeModel;
+import static com.googlecode.javacv.cpp.opencv_highgui.cvSaveImage;
 
 /**
  *
  * @author nikos
  */
-public class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
+public abstract class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
 
     // Constants
     protected static final int BOTH_EYES = 2;
     protected static final int ONE_EYE = 1;
-    protected static final int SCALE = 1;
+    protected static final int RECT_OFFSET = 20; // Pixels larger
+    protected static final int VALIDITY = 5; // Frames that have to be valid to react
     
     protected opencv_objdetect.CvHaarClassifierCascade eyeClassifier = null, faceClassifier = null;
     protected opencv_core.IplImage grabbedImage = null, grayImage = null, smallImage = null;
@@ -45,11 +51,15 @@ public class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
     protected opencv_core.CvMemStorage storage = null;
     // For the eyes
     protected opencv_core.CvRect lastLeftRect = null, lastRightRect = null;
+    protected opencv_core.CvRect previousLeftRect = null, previousRightRect = null;
     // For the faces
     protected opencv_core.CvRect faceRect = null;
     
     protected long lastUpdate = 0;
     protected int updateTimer = 100;
+    protected int validityCount = 0; // Current validity
+    
+    protected String whichEye = ""; // Determine which eye closed
 
     public EyeBlinkStimulus() {
         super();
@@ -95,28 +105,111 @@ public class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
     @Override
     public void onDataReceived() {
         // To be implemented by offspring
-        if (lSensors.isEmpty()) 
-        {
+        if (lSensors.isEmpty()) {
             return;
         }
         
-        if (new Date().getTime() - lastUpdate < 100) {
+        if (new Date().getTime() - lastUpdate < updateTimer) {
             return;
         }
         lastUpdate = new Date().getTime();
         
-        for (ISensor<IplImage> isCurSensor : lSensors) {
+        for (ISensor<opencv_core.IplImage> isCurSensor : lSensors) {
+            // Get latest data from sensor
+            grabbedImage = isCurSensor.getData();
             
+            // Detect all faces in current frame
+            facesDetected = detectFaces(grabbedImage);
+            // Get most central face
+            faceRect = getCentralFace();
+            
+            // If a face was found
+            if(faceRect.width() > 0 && faceRect.height() > 0) {
+                // Set region of interest (the face)
+                cvSetImageROI(grabbedImage, faceRect);
+                faceImage = cvCreateImage(cvGetSize(grabbedImage),
+                        grabbedImage.depth(),
+                        grabbedImage.nChannels());
+                cvCopy(grabbedImage, faceImage, null);
+                // Detect all eyes in the face area
+                eyesDetected = detectOpenEyes(faceImage);
+                // Get rightmost and leftmost eyes
+                lastLeftRect = getLeftmostEye();
+                lastRightRect = getRightmostEye();
+                // Reset region of interest
+                cvResetImageROI(grabbedImage);
+            }
+            
+            // If you didnt succeed in finding any faces, return
+            if(lastLeftRect == null || lastRightRect == null) {
+                return;
+            }
+
+            // DEBUG LINES
+            // Draw a green rectangle around left eye
+            cvDrawRect(faceImage,
+                new CvPoint(lastLeftRect.x(), lastLeftRect.y()),
+                new CvPoint((lastLeftRect.x()+lastLeftRect.width()),
+                    (lastLeftRect.y()+lastLeftRect.height())),
+                CvScalar.GREEN, 2, CV_AA, 0);
+            // Draw a red rectangle around right eye
+            cvDrawRect(faceImage,
+                new CvPoint(lastRightRect.x(), lastRightRect.y()),
+                new CvPoint((lastRightRect.x()+lastRightRect.width()),
+                    (lastRightRect.y()+lastRightRect.height())),
+                CvScalar.RED, 2, CV_AA, 0);
+            // Draw a magenta rectangle around face
+            //cvDrawRect(grabbedImage,
+            //    new CvPoint(faceRect.x()*SCALE, faceRect.y()*SCALE),
+            //    new CvPoint((faceRect.x()+faceRect.width())*SCALE,
+            //        (faceRect.y()+faceRect.height())*SCALE),
+            //    CvScalar.MAGENTA, 2, CV_AA, 0);
+            // Snapshot
+            cvSaveImage("eye.jpg", faceImage);
+            //////////////
+            
+            // If the right and left eye are the same one
+            // (if one rectangle contains the other)
+            if(containsRect(lastLeftRect, lastRightRect, RECT_OFFSET) || 
+                    containsRect(lastRightRect, lastLeftRect, RECT_OFFSET)) {
+                // then only one eye has been found (the other must be closed)
+                
+                // Make sure previous eyes were initialized
+                if(previousRightRect == null || previousLeftRect == null) {
+                    return;
+                }
+                // Determine which eye blinked!
+                whichEye = whichEyeBlinked();
+            }
+            else {
+                // both eyes are open
+                // Mark them as previous eyes
+                previousLeftRect = lastLeftRect;
+                previousRightRect = lastRightRect;
+                validityCount = 0; // Reset validity
+            }
         }
     }
+    
+    public void shouldReact() {
+        if(++validityCount == VALIDITY) {
+            callReactors();
+            validityCount = 0; // Reset validity
+        }
+        // DEBUG LINES
+        System.out.println(whichEye + " " + validityCount);
+        //////////////
+    }
+    
+    protected abstract String whichEyeBlinked();
     
     // Returns a sequence of open eyes in the specified image
     protected opencv_core.CvSeq detectOpenEyes(IplImage curImage) {
         grayImage = opencv_core.IplImage.create(cvGetSize(curImage), IPL_DEPTH_8U, 1);
         cvCvtColor(curImage, grayImage, CV_BGR2GRAY);
         
-        smallImage = opencv_core.IplImage.create(curImage.width()/SCALE,
-                curImage.height()/SCALE, IPL_DEPTH_8U, 1);
+        smallImage = opencv_core.IplImage.create(curImage.width(),
+                curImage.height(), IPL_DEPTH_8U, 1);
         
         cvResize(grayImage, smallImage, CV_INTER_LINEAR);
         
@@ -138,8 +231,8 @@ public class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
         grayImage = opencv_core.IplImage.create(cvGetSize(curImage), IPL_DEPTH_8U, 1);
         cvCvtColor(curImage, grayImage, CV_BGR2GRAY);
         
-        smallImage = opencv_core.IplImage.create(curImage.width()/SCALE,
-                curImage.height()/SCALE, IPL_DEPTH_8U, 1);
+        smallImage = opencv_core.IplImage.create(curImage.width(),
+                curImage.height(), IPL_DEPTH_8U, 1);
         
         cvResize(grayImage, smallImage, CV_INTER_LINEAR);
         
@@ -236,4 +329,31 @@ public class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
         return new CvPoint(r.x() + (r.x()+r.width())/2,
                 r.y() + (r.y()+r.height())/2);
     }
+    
+    // Check if larger (by offset) rectangle contains the smaller one
+    protected boolean containsRect(CvRect big, CvRect small, int offset) {
+        // If big rectangle with offset leaves the screen borders
+        if(big.x() - offset/2 < 0 ||
+                big.y() - offset/2 < 0 ||
+                big.x() + big.width() + offset/2 > grabbedImage.width() ||
+                big.y() + big.height() + offset/2 > grabbedImage.height()) {
+            return containsRect(big, small, 0); // Call me with offset 0
+        }
+        // Construct a rectangle RECT_OFFSTET pixels larger than the big one
+        CvRect container = new CvRect(big.x() - offset/2,
+                big.y() - offset/2,
+                big.x() + big.width() + offset/2,
+                big.y() + big.height() + offset/2);
+        // See if the new rectangle contains the smaller one
+        if(container.x() < small.x() &&
+                container.y() < small.y() &&
+                container.x() + container.width() > small.x() + small.width() &&
+                container.y() + container.height() > small.y() + small.height()) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
 }

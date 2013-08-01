@@ -10,11 +10,13 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import org.scify.jthinkfreedom.reactors.LeftClickReactor;
 import org.scify.jthinkfreedom.reactors.RightClickReactor;
 import org.scify.jthinkfreedom.sensors.WebcamSensor;
 import org.scify.jthinkfreedom.sensors.ISensor;
 import org.scify.jthinkfreedom.sensors.NetworkImageSensor;
 import org.scify.jthinkfreedom.stimuli.LeftEyeBlinkStimulus;
+import org.scify.jthinkfreedom.stimuli.RightEyeBlinkStimulus;
 
 /**
  *
@@ -46,10 +48,16 @@ public class Main {
         }
         
         // Connect sensor to reactor and stimulus
+        // Left Click to Left Eye
         LeftEyeBlinkStimulus sLeftBlinkStimulus = new LeftEyeBlinkStimulus();
         sSensor.addStimulus(sLeftBlinkStimulus);
         sLeftBlinkStimulus.addSensor(sSensor);
-        sLeftBlinkStimulus.addReactor(new RightClickReactor());
+        sLeftBlinkStimulus.addReactor(new LeftClickReactor());
+        // Right Click to Right Eye
+        RightEyeBlinkStimulus sRightBlinkStimulus = new RightEyeBlinkStimulus();
+        sSensor.addStimulus(sRightBlinkStimulus);
+        sRightBlinkStimulus.addSensor(sSensor);
+        sRightBlinkStimulus.addReactor(new RightClickReactor());
         
         // FOR SOCKET COMMUNICATION
         //TCPReactorClient rReactor = new TCPReactorClient();
