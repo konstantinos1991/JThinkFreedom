@@ -8,9 +8,8 @@ import com.googlecode.javacv.cpp.opencv_core;
 import java.util.Date;
 import org.scify.jthinkfreedom.sensors.ISensor;
 import static com.googlecode.javacv.cpp.opencv_core.*;
-import static com.googlecode.javacv.cpp.opencv_highgui.*;
-
-
+import static com.googlecode.javacv.cpp.opencv_highgui.cvSaveImage;
+import static com.googlecode.javacv.cpp.opencv_imgproc.*;
 
 /**
  *
@@ -32,19 +31,19 @@ public class LeftEyeBlinkStimulus extends EyeBlinkStimulus{
     }
     
     // Check if larger (by offset) rectangle contains the smaller one
-    public boolean containsRect(CvRect big, CvRect small) {
-        // Don't leave screen borders
-        if(big.x() - RECT_OFFSET/2 < 0 ||
-                big.y() - RECT_OFFSET/2 < 0 ||
-                big.x() + big.width() + RECT_OFFSET/2 > grabbedImage.width() ||
-                big.y() + big.height() + RECT_OFFSET/2 > grabbedImage.height()) {
-            return false; // TODO: change
+    public boolean containsRect(CvRect big, CvRect small, int offset) {
+        // If big rectangle with offset leaves the screen borders
+        if(big.x() - offset/2 < 0 ||
+                big.y() - offset/2 < 0 ||
+                big.x() + big.width() + offset/2 > grabbedImage.width() ||
+                big.y() + big.height() + offset/2 > grabbedImage.height()) {
+            return containsRect(big, small, 0); // Call me with offset 0
         }
         // Construct a rectangle RECT_OFFSTET pixels larger than the big one
-        CvRect container = new CvRect(big.x() - RECT_OFFSET/2,
-                big.y() - RECT_OFFSET/2,
-                big.x() + big.width() + RECT_OFFSET/2,
-                big.y() + big.height() + RECT_OFFSET/2);
+        CvRect container = new CvRect(big.x() - offset/2,
+                big.y() - offset/2,
+                big.x() + big.width() + offset/2,
+                big.y() + big.height() + offset/2);
         // See if the new rectangle contains the smaller one
         if(container.x() < small.x() &&
                 container.y() < small.y() &&
@@ -86,19 +85,20 @@ public class LeftEyeBlinkStimulus extends EyeBlinkStimulus{
                         grabbedImage.depth(),
                         grabbedImage.nChannels());
                 cvCopy(grabbedImage, faceImage, null);
-                cvResetImageROI(grabbedImage);
                 // Detect all eyes in the face area
                 eyesDetected = detectOpenEyes(faceImage);
                 // Get rightmost and leftmost eyes
                 lastLeftRect = getLeftmostEye();
                 lastRightRect = getRightmostEye();
+                // Reset region of interest
+                cvResetImageROI(grabbedImage);
             }
             
             // If you didnt succeed in finding any faces, return
             if(lastLeftRect == null || lastRightRect == null) {
                 return;
             }
-            
+
             // DEBUG LINES
             // Draw a green rectangle around left eye
             cvDrawRect(faceImage,
@@ -124,14 +124,15 @@ public class LeftEyeBlinkStimulus extends EyeBlinkStimulus{
             
             // If the right and left eye are the same one
             // (if one rectangle contains the other)
-            if(containsRect(lastLeftRect, lastRightRect) || 
-                    containsRect(lastRightRect, lastLeftRect)) {
+            if(containsRect(lastLeftRect, lastRightRect, RECT_OFFSET) || 
+                    containsRect(lastRightRect, lastLeftRect, RECT_OFFSET)) {
                 // then only one eye has been found (the other must be closed)
                 
                 // Make sure previous eyes were initialized
                 if(previousRightRect == null || previousLeftRect == null) {
                     return;
                 }
+                
                 // If the eye is closer to the previous right one
                 if(Math.abs(lastLeftRect.x() - previousRightRect.x()) < 
                         Math.abs(lastLeftRect.x() - previousLeftRect.x())) {
@@ -154,7 +155,7 @@ public class LeftEyeBlinkStimulus extends EyeBlinkStimulus{
     }
     
     public void shouldReact() {
-        if(validityCount++ == VALIDITY) {
+        if(++validityCount == VALIDITY) {
             callReactors();
             validityCount = 0; // Reset validity
         }

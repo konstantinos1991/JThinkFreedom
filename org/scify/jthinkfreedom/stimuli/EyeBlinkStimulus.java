@@ -11,9 +11,11 @@ import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
 import static com.googlecode.javacv.cpp.opencv_core.cvGetSize;
 import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2GRAY;
+import static com.googlecode.javacv.cpp.opencv_imgproc.CV_HOUGH_GRADIENT;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_INTER_LINEAR;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvCvtColor;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvEqualizeHist;
+import static com.googlecode.javacv.cpp.opencv_imgproc.cvHoughCircles;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvResize;
 import com.googlecode.javacv.cpp.opencv_objdetect;
 import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNING;
@@ -125,7 +127,7 @@ public class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
         storage = opencv_core.CvMemStorage.create();
         
         // Determine whether open eye has been found
-        opencv_core.CvSeq openEyes = cvHaarDetectObjects(smallImage, eyeClassifier, storage, 1.2, 3, CV_HAAR_DO_CANNY_PRUNING);
+        opencv_core.CvSeq openEyes = cvHaarDetectObjects(smallImage, eyeClassifier, storage, 1.1, 3, CV_HAAR_DO_CANNY_PRUNING);
         
         cvClearMemStorage(storage);
         return openEyes;
@@ -148,7 +150,7 @@ public class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
         storage = opencv_core.CvMemStorage.create();
         
         // Determine whether open eye has been found
-        opencv_core.CvSeq faces = cvHaarDetectObjects(smallImage, faceClassifier, storage, 1.2, 3, CV_HAAR_DO_CANNY_PRUNING);
+        opencv_core.CvSeq faces = cvHaarDetectObjects(smallImage, faceClassifier, storage, 1.1, 3, CV_HAAR_DO_CANNY_PRUNING);
         
         cvClearMemStorage(storage);
         return faces;
