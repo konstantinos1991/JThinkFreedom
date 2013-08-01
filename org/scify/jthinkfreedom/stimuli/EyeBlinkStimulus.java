@@ -145,6 +145,17 @@ public abstract class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
                 return;
             }
 
+            // If left rectangle or right rectangle remain with
+            // the initial values (0, 0) or (IMG_WIDTH, IMG_HEIGHT)
+            if(containsRect(lastLeftRect, new CvRect(0, 0, 0, 0), 0) ||
+                    containsRect(lastRightRect, 
+                    new CvRect(grabbedImage.width(), grabbedImage.height(),
+                        0, 0), 0)) {
+                // Then we lost the eyes
+                lastLeftRect = lastRightRect = null;
+                return;
+            }
+            
             // DEBUG LINES
             // Draw a green rectangle around left eye
             cvDrawRect(faceImage,
@@ -160,9 +171,9 @@ public abstract class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
                 CvScalar.RED, 2, CV_AA, 0);
             // Draw a magenta rectangle around face
             //cvDrawRect(grabbedImage,
-            //    new CvPoint(faceRect.x()*SCALE, faceRect.y()*SCALE),
-            //    new CvPoint((faceRect.x()+faceRect.width())*SCALE,
-            //        (faceRect.y()+faceRect.height())*SCALE),
+            //    new CvPoint(faceRect.x(), faceRect.y()),
+            //    new CvPoint((faceRect.x()+faceRect.width()),
+            //        (faceRect.y()+faceRect.height())),
             //    CvScalar.MAGENTA, 2, CV_AA, 0);
             // Snapshot
             cvSaveImage("eye.jpg", faceImage);
@@ -188,6 +199,7 @@ public abstract class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
                 previousRightRect = lastRightRect;
                 validityCount = 0; // Reset validity
             }
+            
         }
     }
     
@@ -252,7 +264,7 @@ public abstract class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
     // Returns the rectangle which containst the leftmost eye
     // in the current CvSeq (which contains all open eyes)
     protected CvRect getLeftmostEye() {
-        // Initialize last left rectangle with size 0x0
+        // Initialize last left rectangle at position 0x0
         CvRect left = new CvRect(0, 0, 0, 0);
         try {
             // For every eye detected
@@ -275,9 +287,9 @@ public abstract class EyeBlinkStimulus extends StimulusAdapter<IplImage> {
     // Returns the rectangle which containst the rightmost eye
     // in the current CvSeq (which contains all open eyes)
     protected CvRect getRightmostEye() {
-        // Initialize last right rectangle with size MAX_INTxMAX_INT
-        CvRect right = new CvRect(Integer.MAX_VALUE, Integer.MAX_VALUE, 
-                Integer.MAX_VALUE, Integer.MAX_VALUE);
+        // Initialize last right rectangle at position IMG_WIDTHxIMG_HEIGHT
+        CvRect right = new CvRect(grabbedImage.width(), grabbedImage.height(), 
+                0, 0);
         try {
             // For every eye detected
             for(int i=0; i<eyesDetected.total(); i++) {
