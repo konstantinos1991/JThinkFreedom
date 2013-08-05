@@ -50,9 +50,9 @@ public class MouseStimulus extends StimulusAdapter<java.awt.PointerInfo> {
             }
             // otherwise
             // If we should react
-            if(shouldReact(lastInfo, info))
-                // Do it
+            if(shouldReact(lastInfo, info)) {
                 callReactors();
+            }
             // Also update last info
             lastInfo = info;
         }

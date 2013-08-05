@@ -12,9 +12,9 @@ import java.io.PrintStream;
  */
 public class txtInOut {
 
-    String FileName;
-    FileInputStream inStream;
-    PrintStream outStream;
+    private String FileName;
+    private FileInputStream inStream;
+    private PrintStream outStream;
 
     public String getFileName() {
         return FileName;

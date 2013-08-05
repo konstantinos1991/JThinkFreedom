@@ -1,7 +1,6 @@
 package org.scify.jthinkfreedom.stimuli.tools;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,34 +11,25 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
 public final class Main extends JFrame {
 
-    static Main window;
-    // This is used to show the scollbar is the image is much bigger than the screen
-    JScrollPane scrollPane;
-    WorkSpace space;
-    JMenuBar menubar;
+    private static Main window;
+    private WorkSpace space;
+    private JMenuBar menubar;
 
     public Main() {
 
         setTitle("SubImage Selection");
-        setSize(1280, 1024);
+        setSize(Toolkit.getDefaultToolkit().getScreenSize().width, 
+                Toolkit.getDefaultToolkit().getScreenSize().height);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-
-        // Put the frame on the middle of the screen
-        Toolkit toolkit = getToolkit();
-        Dimension size = toolkit.getScreenSize();
-        setLocation(size.width / 2 - getWidth() / 2, size.height / 2 - getHeight() / 2);
-
         space = new WorkSpace();
-        scrollPane = new JScrollPane(space);
-
-        getContentPane().add(scrollPane, BorderLayout.CENTER);
-
+        
+        this.add(space, BorderLayout.CENTER);
+        
         createMenuBar();
     }
 

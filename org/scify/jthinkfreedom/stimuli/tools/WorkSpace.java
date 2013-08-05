@@ -29,21 +29,21 @@ import javax.swing.JPanel;
  */
 public class WorkSpace extends JPanel {
 
-    BufferedImage image;
-    String path = "";
-    String[] images;
-    int iterator;
-    Graphics g;
+    private BufferedImage image;
+    private String path = "";
+    private String[] images;
+    private int iterator;
+    private Graphics g;
     private Rectangle2D rect;
-    int minHeight = 60;
-    int minWidth = 60;
-    boolean dragging = false;
-    int x1 = 0;
-    int y1 = 0;
-    int x2 = 0;
-    int y2 = 0;
-    ArrayList<String> obj;
-    txtInOut file = new txtInOut();
+    private int minHeight = 40;
+    private int minWidth = 40;
+    private boolean dragging = false;
+    private int x1 = 0;
+    private int y1 = 0;
+    private int x2 = 0;
+    private int y2 = 0;
+    private ArrayList<String> obj;
+    private txtInOut file = new txtInOut();
 
     public WorkSpace() {
         iterator = 0;
@@ -171,7 +171,6 @@ public class WorkSpace extends JPanel {
 
                 if (image != null) {
 
-
                     if (rect == null) // Create the rectangle
                     {
                         rect = new Rectangle2D.Double(x - (minHeight / 2), y - (minWidth / 2), minHeight, minWidth);
@@ -192,7 +191,6 @@ public class WorkSpace extends JPanel {
                         rect.setRect(x, y, minHeight, minWidth);
                     }
 
-                    // appeller repaint pour rafraichir l'affichage
                     repaint();
                 }
             }
