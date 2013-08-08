@@ -23,6 +23,6 @@ public interface IStimulus<T> {
     public void clearSensors();
     public void start();
     public void stop();
-    public void onDataReceived();
     public void callReactors();
+    public abstract void onDataReceived();
 }

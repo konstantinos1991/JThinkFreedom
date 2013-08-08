@@ -62,9 +62,7 @@ public abstract class StimulusAdapter<T> implements IStimulus<T> {
      * Should be overridden by offspring.
      */
     @Override
-    public void onDataReceived() {
-        
-    }
+    public abstract void onDataReceived();
 
     @Override
     public void start() {

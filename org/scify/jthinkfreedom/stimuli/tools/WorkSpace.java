@@ -297,7 +297,7 @@ public class WorkSpace extends JPanel {
     }
 
     private void readImage() {
-        System.out.println("Image Loaded: " + path + images[iterator]);
+        System.out.println("Image Loaded: " + path + " " + images[iterator]);
         try {
             if (image != null) {
                 image.flush();

@@ -9,7 +9,7 @@ package org.scify.jthinkfreedom.stimuli;
  * @author eustratiadis-hua
  */
 
-public class RightEyeBlinkStimulus extends EyeBlinkStimulus{
+public class RightEyeBlinkStimulus extends EyeBlinkStimulus {
     
     public RightEyeBlinkStimulus() {
         super();
