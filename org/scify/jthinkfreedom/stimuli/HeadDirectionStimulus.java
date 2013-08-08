@@ -24,10 +24,7 @@ import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
  *
  * @author eustratiadis-hua
  */
-public class HeadDirectionStimulus extends HeadMovementStimulus {
-
-    //Constants
-    protected static final int VALIDITY = 2; // Frames that have to be valid to react
+public abstract class HeadDirectionStimulus extends HeadMovementStimulus {
     
     protected CvSeq nosesDetected = null;
     protected String direction = ""; // Determine the direction the head moved
@@ -54,7 +51,12 @@ public class HeadDirectionStimulus extends HeadMovementStimulus {
     
     @Override
     protected void defineReactionCriteria() {
-        
+        // If previous nose has no value (first time only)
+        if(previousNoseRect == null) {
+            previousNoseRect = noseRect;
+        }
+        // Determine which way the head went
+        direction = whichWayHeadWent();
     }
 
     // Returns a sequence of noses in the specified image
@@ -81,12 +83,12 @@ public class HeadDirectionStimulus extends HeadMovementStimulus {
     }
     
     protected void shouldReact() {
-        if (++validityCount == VALIDITY) {
-            callReactors();
-            validityCount = 0; // Reset validity
-        }
+        callReactors();
         // DEBUG LINES
         System.out.println(direction + " " + validityCount);
         //////////////
     }
+    
+    // To be overriden by offspring
+    protected abstract String whichWayHeadWent();
 }

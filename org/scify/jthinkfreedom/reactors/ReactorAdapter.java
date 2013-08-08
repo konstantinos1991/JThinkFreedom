@@ -8,10 +8,9 @@ package org.scify.jthinkfreedom.reactors;
  *
  * @author ggianna
  */
-public class ReactorAdapter implements IReactor {
+public abstract class ReactorAdapter implements IReactor {
 
     @Override
-    public void react() {
-    }
+    public abstract void react();
     
 }

@@ -8,6 +8,21 @@ package org.scify.jthinkfreedom.stimuli;
  *
  * @author eustratiadis-hua
  */
-public class HeadDownStimulus {
+public class HeadDownStimulus extends HeadDirectionStimulus {
+    
+    public HeadDownStimulus() {
+        super();
+    }
+    
+    @Override
+    protected String whichWayHeadWent() {
+        // If nose
+        if(noseRect.y() > previousNoseRect.y()) {
+            // then call reactors
+            shouldReact();
+            return "Head Moved Down!";
+        }
+        return "";
+    }
     
 }

@@ -24,5 +24,5 @@ public interface IStimulus<T> {
     public void start();
     public void stop();
     public void callReactors();
-    public abstract void onDataReceived();
+    public void onDataReceived();
 }

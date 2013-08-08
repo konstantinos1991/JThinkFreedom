@@ -159,7 +159,7 @@ public abstract class HeadMovementStimulus extends StimulusAdapter<IplImage> {
                 cvResetImageROI(grabbedImage);
             }
             
-            // If you didnt succeed in finding any eyes, return
+            // If you didnt succeed in finding any eyes or a nose, return
             if(lastLeftRect == null || lastRightRect == null || noseRect == null) {
                 return;
             }
@@ -176,7 +176,7 @@ public abstract class HeadMovementStimulus extends StimulusAdapter<IplImage> {
             }
             
             // Makes system slow - Only to be called when debugging
-            drawTrackingData();
+            //drawTrackingData();
             
             // Call defineReactionCriteria() of offspring
             // It decides whether or not a reactor should be called
@@ -254,21 +254,21 @@ public abstract class HeadMovementStimulus extends StimulusAdapter<IplImage> {
                 CvScalar.BLACK, 2, CV_AA, 0);
         }
         // Draw a green rectangle around the left eye
-        //if(lastLeftRect != null) {
-        //    cvDrawRect(faceImage,
-        //        new CvPoint(lastLeftRect.x(), lastLeftRect.y()),
-        //        new CvPoint((lastLeftRect.x()+lastLeftRect.width()),
-        //            (lastLeftRect.y()+lastLeftRect.height())),
-        //        CvScalar.GREEN, 2, CV_AA, 0);
-        //}
+        if(lastLeftRect != null) {
+            cvDrawRect(faceImage,
+                new CvPoint(lastLeftRect.x(), lastLeftRect.y()),
+                new CvPoint((lastLeftRect.x()+lastLeftRect.width()),
+                    (lastLeftRect.y()+lastLeftRect.height())),
+                CvScalar.GREEN, 2, CV_AA, 0);
+        }
         // Draw a red rectangle around the right eye
-        //if(lastRightRect != null) {
-        //    cvDrawRect(faceImage,
-        //        new CvPoint(lastRightRect.x(), lastRightRect.y()),
-        //        new CvPoint((lastRightRect.x()+lastRightRect.width()),
-        //            (lastRightRect.y()+lastRightRect.height())),
-        //        CvScalar.RED, 2, CV_AA, 0);
-        //}
+        if(lastRightRect != null) {
+            cvDrawRect(faceImage,
+                new CvPoint(lastRightRect.x(), lastRightRect.y()),
+                new CvPoint((lastRightRect.x()+lastRightRect.width()),
+                    (lastRightRect.y()+lastRightRect.height())),
+                CvScalar.RED, 2, CV_AA, 0);
+        }
         // Snapshot
         cvSaveImage("tracked.jpg", faceImage);
     }

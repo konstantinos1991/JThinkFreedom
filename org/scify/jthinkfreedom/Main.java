@@ -11,11 +11,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import org.scify.jthinkfreedom.reactors.LeftClickReactor;
+import org.scify.jthinkfreedom.reactors.MouseMoveDownReactor;
+import org.scify.jthinkfreedom.reactors.MouseMoveLeftReactor;
+import org.scify.jthinkfreedom.reactors.MouseMoveRightReactor;
+import org.scify.jthinkfreedom.reactors.MouseMoveUpReactor;
 import org.scify.jthinkfreedom.reactors.RightClickReactor;
 import org.scify.jthinkfreedom.sensors.WebcamSensor;
 import org.scify.jthinkfreedom.sensors.ISensor;
 import org.scify.jthinkfreedom.sensors.NetworkImageSensor;
-import org.scify.jthinkfreedom.stimuli.HeadDirectionStimulus;
+import org.scify.jthinkfreedom.stimuli.HeadDownStimulus;
+import org.scify.jthinkfreedom.stimuli.HeadLeftStimulus;
+import org.scify.jthinkfreedom.stimuli.HeadRightStimulus;
+import org.scify.jthinkfreedom.stimuli.HeadUpStimulus;
 import org.scify.jthinkfreedom.stimuli.LeftEyeBlinkStimulus;
 import org.scify.jthinkfreedom.stimuli.RightEyeBlinkStimulus;
 
@@ -59,10 +66,26 @@ public class Main {
         sSensor.addStimulus(sRightBlinkStimulus);
         sRightBlinkStimulus.addSensor(sSensor);
         sRightBlinkStimulus.addReactor(new RightClickReactor());
-        // Head Movement
-        HeadDirectionStimulus sHeadMovement = new HeadDirectionStimulus();
-        sSensor.addStimulus(sHeadMovement);
-        sHeadMovement.addSensor(sSensor);
+        // Mouse Up to Head Up
+        HeadUpStimulus sHeadUp = new HeadUpStimulus();
+        sSensor.addStimulus(sHeadUp);
+        sHeadUp.addSensor(sSensor);
+        sHeadUp.addReactor(new MouseMoveUpReactor());
+        // Mouse Down to Head Down
+        HeadDownStimulus sHeadDown = new HeadDownStimulus();
+        sSensor.addStimulus(sHeadDown);
+        sHeadDown.addSensor(sSensor);
+        sHeadDown.addReactor(new MouseMoveDownReactor());
+        // Mouse Left to Head Left
+        HeadLeftStimulus sHeadLeft = new HeadLeftStimulus();
+        sSensor.addStimulus(sHeadLeft);
+        sHeadLeft.addSensor(sSensor);
+        sHeadLeft.addReactor(new MouseMoveLeftReactor());
+        // Mouse Right to Head Right
+        HeadRightStimulus sHeadRight = new HeadRightStimulus();
+        sSensor.addStimulus(sHeadRight);
+        sHeadRight.addSensor(sSensor);
+        sHeadRight.addReactor(new MouseMoveRightReactor());
         
         // FOR SOCKET COMMUNICATION
         //TCPReactorClient rReactor = new TCPReactorClient();
