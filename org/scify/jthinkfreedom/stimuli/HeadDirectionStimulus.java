@@ -74,7 +74,7 @@ public abstract class HeadDirectionStimulus extends HeadMovementStimulus {
             return;
         }
         // Also, if the nose rectangle remains with the initial values (0, 0)
-        if(containsRect(noseRect, new CvRect(0, 0, 0, 0), 0)) {
+        if(containsRect(noseRect, new CvRect(0, 0, 0, 0), RECT_OFFSET/4)) {
             // Then we lost the nose
             noseRect = null;
             return;
