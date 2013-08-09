@@ -16,6 +16,7 @@ import static com.googlecode.javacv.cpp.opencv_imgproc.cvResize;
 import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNING;
 import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
 import static org.scify.jthinkfreedom.stimuli.HeadMovementStimulus.RECT_OFFSET;
+import static org.scify.jthinkfreedom.stimuli.HeadMovementStimulus.lastLeftRect;
 
 /**
  *
@@ -44,13 +45,26 @@ public abstract class EyeBlinkStimulus extends HeadMovementStimulus {
     protected void detect() {
         // Detect all eyes in the face area
         eyesDetected = detectOpenEyes(faceImage);
-        // Get rightmost and leftmost eyes
-        lastLeftRect = getLeftmostEye();
-        lastRightRect = getRightmostEye();
+        if(eyesDetected.total() > 0) {
+            // Get rightmost and leftmost eyes
+            lastLeftRect = getLeftmostEye();
+            lastRightRect = getRightmostEye();
+        }
     }
     
     @Override
     protected void defineReactionCriteria() {
+        // If left rectangle or right rectangle remain with
+        // the initial values (0, 0) or (IMG_WIDTH, IMG_HEIGHT)
+        if(containsRect(lastLeftRect, new CvRect(0, 0, 0, 0), 0) ||
+                containsRect(lastRightRect, 
+                new CvRect(grabbedImage.width(), grabbedImage.height(),
+                    0, 0), 0)) {
+            // Then we lost the eyes
+            lastLeftRect = lastRightRect = null;
+            return;
+        }
+        
         // If the right and left eye are the same one
         // (if one rectangle contains the other)
         if(containsRect(lastLeftRect, lastRightRect, RECT_OFFSET) || 

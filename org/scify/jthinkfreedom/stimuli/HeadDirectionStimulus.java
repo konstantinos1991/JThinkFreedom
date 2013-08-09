@@ -5,6 +5,7 @@
 package org.scify.jthinkfreedom.stimuli;
 
 import com.googlecode.javacv.cpp.opencv_core.CvMemStorage;
+import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
 import com.googlecode.javacv.cpp.opencv_core.CvSeq;
 import static com.googlecode.javacv.cpp.opencv_core.IPL_DEPTH_8U;
@@ -19,6 +20,9 @@ import static com.googlecode.javacv.cpp.opencv_imgproc.cvEqualizeHist;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvResize;
 import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNING;
 import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
+import static org.scify.jthinkfreedom.stimuli.HeadMovementStimulus.noseRect;
+import static org.scify.jthinkfreedom.stimuli.HeadMovementStimulus.previousLeftRect;
+import static org.scify.jthinkfreedom.stimuli.HeadMovementStimulus.previousNoseRect;
 
 /**
  *
@@ -26,7 +30,21 @@ import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
  */
 public abstract class HeadDirectionStimulus extends HeadMovementStimulus {
     
+    // Constants
+    protected static final int LEFT = 0;
+    protected static final int UP = 1;
+    protected static final int RIGHT = 2;
+    protected static final int DOWN = 3;
+    
     protected CvSeq nosesDetected = null;
+    // Center of previous and current nose rectangles, used for calculations
+    protected static CvPoint prevNoseCenter = null, curNoseCenter = null;
+    // Center of left and right eye rectangles, when we last detected both eyes
+    protected static CvPoint prevLeftEyeCenter = null, prevRightEyeCenter = null;
+    
+    // Lock opposite directions so there won't be back and forths
+    protected boolean[] lock = new boolean[] {false, false, false, false};
+    
     protected String direction = ""; // Determine the direction the head moved
     protected int validityCount = 0; // Current validity
     
@@ -44,19 +62,45 @@ public abstract class HeadDirectionStimulus extends HeadMovementStimulus {
         nosesDetected = detectNoses(faceImage);
         // If a nose was found
         if(nosesDetected.total() > 0) {
-            // Make it our new nose
-            noseRect = new CvRect(cvGetSeqElem(nosesDetected, 0));
+            // Get the most central nose (in case of false positives)
+            noseRect = getCentralRectangle(nosesDetected);
         }
     }
     
     @Override
     protected void defineReactionCriteria() {
+        // If previous left or right eye haven't received a value yet, return
+        if(previousLeftRect == null || previousRightRect == null) {
+            return;
+        }
+        // Also, if the nose rectangle remains with the initial values (0, 0)
+        if(containsRect(noseRect, new CvRect(0, 0, 0, 0), 0)) {
+            // Then we lost the nose
+            noseRect = null;
+            return;
+        }
+        
         // If previous nose has no value (first time only)
         if(previousNoseRect == null) {
+            // Mark the center of the previous nose rectangle
             previousNoseRect = noseRect;
+            prevNoseCenter = getRectangleCenter(previousNoseRect);
+            // Mark the centers of the eye rectangles, when we last saw both eyes
+            prevLeftEyeCenter = getRectangleCenter(previousLeftRect);
+            prevRightEyeCenter = getRectangleCenter(previousRightRect);
         }
-        // Determine which way the head went
-        direction = whichWayHeadWent();
+        // If nose and previous nose rectangles are the same
+        if(containsRect(previousNoseRect, noseRect, 0)) {
+            // Then the nose hasn't moved, do nothing
+        }
+        else {
+            // The nose has moved
+            // Mark the center of the current nose rectangle
+            curNoseCenter = getRectangleCenter(noseRect);
+            // Determine which way the head went
+            direction = whichWayHeadWent();
+            
+        }
     }
 
     // Returns a sequence of noses in the specified image
@@ -85,7 +129,7 @@ public abstract class HeadDirectionStimulus extends HeadMovementStimulus {
     protected void shouldReact() {
         callReactors();
         // DEBUG LINES
-        System.out.println(direction + " " + validityCount);
+        //System.out.println(direction + " " + validityCount);
         //////////////
     }
     

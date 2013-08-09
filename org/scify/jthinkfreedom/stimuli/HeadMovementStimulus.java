@@ -84,7 +84,7 @@ public abstract class HeadMovementStimulus extends StimulusAdapter<IplImage> {
     public IplImage getFaceImage() {
         return faceImage;
     }
-    
+
     private void initClassifier() {
         try {
             // Preload the opencv_objdetect module to work around a known bug.
@@ -140,8 +140,12 @@ public abstract class HeadMovementStimulus extends StimulusAdapter<IplImage> {
             grabbedImage = isCurSensor.getData();
             // Detect all faces in current frame
             facesDetected = detectFaces(grabbedImage);
+            // If no faces were found, terminate
+            if(facesDetected.total() == 0) {
+                return;
+            }
             // Get most central face
-            faceRect = getCentralFace();
+            faceRect = getCentralRectangle(facesDetected);
             
             // If a face was found
             if(faceRect != null && faceRect.width() > 0 && faceRect.height() > 0) {
@@ -163,21 +167,10 @@ public abstract class HeadMovementStimulus extends StimulusAdapter<IplImage> {
             if(lastLeftRect == null || lastRightRect == null || noseRect == null) {
                 return;
             }
-
-            // If left rectangle or right rectangle remain with
-            // the initial values (0, 0) or (IMG_WIDTH, IMG_HEIGHT)
-            if(containsRect(lastLeftRect, new CvRect(0, 0, 0, 0), 0) ||
-                    containsRect(lastRightRect, 
-                    new CvRect(grabbedImage.width(), grabbedImage.height(),
-                        0, 0), 0)) {
-                // Then we lost the eyes
-                lastLeftRect = lastRightRect = null;
-                return;
-            }
             
             // Makes system slow - Only to be called when debugging
             //drawTrackingData();
-            
+
             // Call defineReactionCriteria() of offspring
             // It decides whether or not a reactor should be called
             defineReactionCriteria();
@@ -208,31 +201,31 @@ public abstract class HeadMovementStimulus extends StimulusAdapter<IplImage> {
         return faces;
     }
     
-    // Returns the most central face in the image
-    protected CvRect getCentralFace() {
-        CvRect face = new CvRect(0, 0, 0, 0);
-        CvPoint faceCenter = new CvPoint(0, 0);
+    // Returns the most central rectangle in the image
+    protected CvRect getCentralRectangle(CvSeq sequence) {
+        CvRect rect = new CvRect(0, 0, 0, 0);
+        CvPoint rectCenter = new CvPoint(0, 0);
         try {
-            // For every face detected
-            for(int i=0; i<facesDetected.total(); i++) {
-                CvRect r = new CvRect(cvGetSeqElem(facesDetected, i));
+            // For every rectangle detected
+            for(int i=0; i<sequence.total(); i++) {
+                CvRect r = new CvRect(cvGetSeqElem(sequence, i));
                 // Get the center of the current rectangle
                 CvPoint curCenter = getRectangleCenter(r);
                 // If current face is closer to the middle of the screen
                 if(Math.abs(curCenter.x() - getGrabbedImage().width()/2) < 
-                        Math.abs(faceCenter.x() - getGrabbedImage().width()/2) &&
+                        Math.abs(rectCenter.x() - getGrabbedImage().width()/2) &&
                         Math.abs(curCenter.y() - getGrabbedImage().height()/2) <
-                        Math.abs(faceCenter.y() - getGrabbedImage().height()/2)) {
+                        Math.abs(rectCenter.y() - getGrabbedImage().height()/2)) {
                     // Make it our new central face
-                    face = r;
+                    rect = r;
                 }
             }
-            return face;
+            return rect;
         }
         catch(NullPointerException e) {
             e.printStackTrace(System.err);
-            System.err.println("Has detectFaces() been called?");
-            return face;
+            System.err.println("Has detect been called?");
+            return rect;
         }
     }
     
@@ -286,7 +279,7 @@ public abstract class HeadMovementStimulus extends StimulusAdapter<IplImage> {
                 big.y() - offset/2 < 0 ||
                 big.x() + big.width() + offset/2 > grabbedImage.width() ||
                 big.y() + big.height() + offset/2 > grabbedImage.height()) {
-            return containsRect(big, small, 0); // Call me with offset 0
+            return false; // Do nothing
         }
         // Construct a rectangle RECT_OFFSTET pixels larger than the big one
         CvRect container = new CvRect(big.x() - offset/2,

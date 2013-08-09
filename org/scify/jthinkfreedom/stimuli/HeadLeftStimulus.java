@@ -4,7 +4,7 @@
  */
 package org.scify.jthinkfreedom.stimuli;
 
-import static org.scify.jthinkfreedom.stimuli.HeadMovementStimulus.noseRect;
+import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 
 /**
  *
@@ -18,12 +18,25 @@ public class HeadLeftStimulus extends HeadDirectionStimulus {
     
     @Override
     protected String whichWayHeadWent() {
-        // If nose
-        if(noseRect.x() < previousNoseRect.x()) {
-            // then call reactors
+        // If cursor is already going right
+        if(lock[RIGHT]) {
+            return "Right is Locked";
+        }
+        // If the distance of the current nose's rectangle's center
+        // from the left eye is less than the last one
+        // then the head moved left
+        if(Math.abs(curNoseCenter.x() - prevLeftEyeCenter.x()) <
+                Math.abs(curNoseCenter.x() - prevRightEyeCenter.x())) {
+            // Lock direction
+            lock[LEFT] = true;
+            // call reactors
             shouldReact();
             return "Head Moved Left!";
         }
-        return "";
+        else {
+            // Unlock direction
+            lock[LEFT] = false;
+            return "Head Stopped Moving Left.";
+        }
     }
 }

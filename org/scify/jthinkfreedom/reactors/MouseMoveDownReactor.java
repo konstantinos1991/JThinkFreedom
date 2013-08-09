@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  */
 public class MouseMoveDownReactor extends ReactorAdapter {
     
-    private static final int MOUSE_SPEED = 5;
+    private static final int MOUSE_SPEED = 20;
     
     @Override
     public void react() {
@@ -24,10 +24,18 @@ public class MouseMoveDownReactor extends ReactorAdapter {
             Robot mouseUp = new Robot();
             // Get current mouse coordinates
             double curX = MouseInfo.getPointerInfo().getLocation().getX();
-            double curY = MouseInfo.getPointerInfo().getLocation().getY() + MOUSE_SPEED;
+            double curY = MouseInfo.getPointerInfo().getLocation().getY();
+            // Get target mouse coordinates
+            double targetY = MouseInfo.getPointerInfo().getLocation().getY() + MOUSE_SPEED;
+
             System.err.println("Mouse Moved Down!");
             // Move mouse up
-            mouseUp.mouseMove((int) curX, (int) curY);
+            for (int i = 0; i < 100; i++) {
+                int mov_x = (((int) curX * i) / 100) + ((int) curX * (100 - i) / 100);
+                int mov_y = (((int) targetY * i) / 100) + ((int) curY * (100 - i) / 100);
+                mouseUp.mouseMove(mov_x, mov_y);
+                mouseUp.delay(10);
+            }
         } catch (AWTException ex) {
             Logger.getLogger(RightClickReactor.class.getName()).log(Level.SEVERE, null, ex);
         }
