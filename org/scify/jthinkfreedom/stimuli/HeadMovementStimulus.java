@@ -163,13 +163,20 @@ public abstract class HeadMovementStimulus extends StimulusAdapter<IplImage> {
                 cvResetImageROI(grabbedImage);
             }
             
-            // If you didnt succeed in finding any eyes or a nose, return
-            if(lastLeftRect == null || lastRightRect == null || noseRect == null) {
+            // If you didnt succeed in finding any eyes, return
+            if(lastLeftRect == null || lastRightRect == null) {
                 return;
             }
             
+            // If you didn't succeed in finding a nose, return
+            // we check for it seperately in case we only need eye detection
+            // in that case, put it in comments
+//            if(noseRect == null) {
+//                return;
+//            }
+            
             // Makes system slow - Only to be called when debugging
-            //drawTrackingData();
+            drawTrackingData();
 
             // Call defineReactionCriteria() of offspring
             // It decides whether or not a reactor should be called

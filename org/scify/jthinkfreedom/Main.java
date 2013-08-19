@@ -66,26 +66,26 @@ public class Main {
         sSensor.addStimulus(sRightBlinkStimulus);
         sRightBlinkStimulus.addSensor(sSensor);
         sRightBlinkStimulus.addReactor(new RightClickReactor());
-        // Mouse Up to Head Up
-        HeadUpStimulus sHeadUp = new HeadUpStimulus();
-        sSensor.addStimulus(sHeadUp);
-        sHeadUp.addSensor(sSensor);
-        sHeadUp.addReactor(new MouseMoveUpReactor());
-        // Mouse Down to Head Down
-        HeadDownStimulus sHeadDown = new HeadDownStimulus();
-        sSensor.addStimulus(sHeadDown);
-        sHeadDown.addSensor(sSensor);
-        sHeadDown.addReactor(new MouseMoveDownReactor());
-        // Mouse Left to Head Left
-        HeadLeftStimulus sHeadLeft = new HeadLeftStimulus();
-        sSensor.addStimulus(sHeadLeft);
-        sHeadLeft.addSensor(sSensor);
-        sHeadLeft.addReactor(new MouseMoveLeftReactor());
-        // Mouse Right to Head Right
-        HeadRightStimulus sHeadRight = new HeadRightStimulus();
-        sSensor.addStimulus(sHeadRight);
-        sHeadRight.addSensor(sSensor);
-        sHeadRight.addReactor(new MouseMoveRightReactor());
+//        // Mouse Up to Head Up
+//        HeadUpStimulus sHeadUp = new HeadUpStimulus();
+//        sSensor.addStimulus(sHeadUp);
+//        sHeadUp.addSensor(sSensor);
+//        sHeadUp.addReactor(new MouseMoveUpReactor());
+//        // Mouse Down to Head Down
+//        HeadDownStimulus sHeadDown = new HeadDownStimulus();
+//        sSensor.addStimulus(sHeadDown);
+//        sHeadDown.addSensor(sSensor);
+//        sHeadDown.addReactor(new MouseMoveDownReactor());
+//        // Mouse Left to Head Left
+//        HeadLeftStimulus sHeadLeft = new HeadLeftStimulus();
+//        sSensor.addStimulus(sHeadLeft);
+//        sHeadLeft.addSensor(sSensor);
+//        sHeadLeft.addReactor(new MouseMoveLeftReactor());
+//        // Mouse Right to Head Right
+//        HeadRightStimulus sHeadRight = new HeadRightStimulus();
+//        sSensor.addStimulus(sHeadRight);
+//        sHeadRight.addSensor(sSensor);
+//        sHeadRight.addReactor(new MouseMoveRightReactor());
         
         // FOR SOCKET COMMUNICATION
         //TCPReactorClient rReactor = new TCPReactorClient();

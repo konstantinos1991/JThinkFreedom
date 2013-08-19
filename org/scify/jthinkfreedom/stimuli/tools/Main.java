@@ -1,6 +1,7 @@
 package org.scify.jthinkfreedom.stimuli.tools;
 
-import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +16,10 @@ import javax.swing.KeyStroke;
 
 public final class Main extends JFrame {
 
+    private static final int SCR_WIDTH = 
+            Toolkit.getDefaultToolkit().getScreenSize().width;
+    private static final int SCR_HEIGHT = 
+            Toolkit.getDefaultToolkit().getScreenSize().height;
     private static Main window;
     private WorkSpace space;
     private JMenuBar menubar;
@@ -22,13 +27,20 @@ public final class Main extends JFrame {
     public Main() {
 
         setTitle("SubImage Selection");
-        setSize(Toolkit.getDefaultToolkit().getScreenSize().width, 
-                Toolkit.getDefaultToolkit().getScreenSize().height);
+        setSize(SCR_WIDTH, SCR_HEIGHT);
+        setLayout(new GridBagLayout());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
+        GridBagConstraints gbc = new GridBagConstraints();
+        
         space = new WorkSpace();
         
-        this.add(space, BorderLayout.CENTER);
+        // For alignment and stuff
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.ipadx = 640;
+        gbc.ipady = 460;
+        this.add(space, gbc);
         
         createMenuBar();
     }
