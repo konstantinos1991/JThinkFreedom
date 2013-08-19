@@ -24,8 +24,8 @@ public class MouseMoveDownReactor extends ReactorAdapter {
             double curX = MouseInfo.getPointerInfo().getLocation().getX();
             // Get target mouse coordinates
             double targetY = MouseInfo.getPointerInfo().getLocation().getY() + MOUSE_SPEED;
-
-            System.err.println("Mouse Moved Down!");
+            
+            
             // Move mouse up
             mouseDown.mouseMove((int) curX, (int) targetY);
         } catch (AWTException ex) {

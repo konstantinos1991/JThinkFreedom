@@ -4,10 +4,6 @@
  */
 package org.scify.jthinkfreedom.stimuli;
 
-import static org.scify.jthinkfreedom.stimuli.HeadDirectionStimulus.LEFT;
-import static org.scify.jthinkfreedom.stimuli.HeadDirectionStimulus.RIGHT;
-import static org.scify.jthinkfreedom.stimuli.HeadDirectionStimulus.UP;
-
 /**
  *
  * @author eustratiadis-hua
@@ -28,7 +24,7 @@ public class HeadRightStimulus extends HeadDirectionStimulus {
         // from the right eye is less than the last one
         // then the head moved right
         if(Math.abs(curNoseCenter.x() - prevLeftEyeCenter.x()) >
-                Math.abs(curNoseCenter.x() - prevRightEyeCenter.x())) {
+                Math.abs(curNoseCenter.x() - prevRightEyeCenter.x()) + RECT_OFFSET/2) {
             // Lock direction
             lock[RIGHT] = true;
             // call reactors

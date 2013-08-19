@@ -12,7 +12,6 @@ import static com.googlecode.javacv.cpp.opencv_core.IPL_DEPTH_8U;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import static com.googlecode.javacv.cpp.opencv_core.cvClearMemStorage;
 import static com.googlecode.javacv.cpp.opencv_core.cvGetSize;
-import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2GRAY;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_INTER_LINEAR;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvCvtColor;
@@ -20,9 +19,6 @@ import static com.googlecode.javacv.cpp.opencv_imgproc.cvEqualizeHist;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvResize;
 import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNING;
 import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
-import static org.scify.jthinkfreedom.stimuli.HeadMovementStimulus.noseRect;
-import static org.scify.jthinkfreedom.stimuli.HeadMovementStimulus.previousLeftRect;
-import static org.scify.jthinkfreedom.stimuli.HeadMovementStimulus.previousNoseRect;
 
 /**
  *
@@ -74,7 +70,7 @@ public abstract class HeadDirectionStimulus extends HeadMovementStimulus {
             return;
         }
         // Also, if the nose rectangle remains with the initial values (0, 0)
-        if(containsRect(noseRect, new CvRect(0, 0, 0, 0), RECT_OFFSET/4)) {
+        if(containsRect(noseRect, new CvRect(0, 0, 0, 0), 0)) {
             // Then we lost the nose
             noseRect = null;
             return;
@@ -90,7 +86,7 @@ public abstract class HeadDirectionStimulus extends HeadMovementStimulus {
             prevRightEyeCenter = getRectangleCenter(previousRightRect);
         }
         // If nose and previous nose rectangles are the same
-        if(containsRect(previousNoseRect, noseRect, 0)) {
+        if(containsRect(previousNoseRect, noseRect, RECT_OFFSET/4)) {
             // Then the nose hasn't moved, do nothing
         }
         else {
@@ -129,7 +125,7 @@ public abstract class HeadDirectionStimulus extends HeadMovementStimulus {
     protected void shouldReact() {
         callReactors();
         // DEBUG LINES
-        //System.out.println(direction + " " + validityCount);
+        System.out.println(direction);
         //////////////
     }
     

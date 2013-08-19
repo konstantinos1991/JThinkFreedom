@@ -30,7 +30,7 @@ public class HeadDownStimulus extends HeadDirectionStimulus {
         // If the distance of the current nose's rectangle's center from the eyes
         // is greater than the last one, then the head moved down
         if(Math.abs(curNoseCenter.y() - totalCenter.y()) >
-                Math.abs(prevNoseCenter.y() - totalCenter.y())) {
+                Math.abs(prevNoseCenter.y() - totalCenter.y()) + RECT_OFFSET/2) {
             // Lock direction
             lock[DOWN] = true;
             // call reactors

@@ -161,7 +161,7 @@ public abstract class EyeBlinkStimulus extends HeadMovementStimulus {
             validityCount = 0; // Reset validity
         }
         // DEBUG LINES
-        //System.out.println(whichEye + " " + validityCount);
+        System.out.println(whichEye + " " + validityCount);
         //////////////
     }
 

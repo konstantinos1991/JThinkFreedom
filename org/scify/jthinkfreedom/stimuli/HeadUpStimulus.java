@@ -5,7 +5,7 @@
 package org.scify.jthinkfreedom.stimuli;
 
 import com.googlecode.javacv.cpp.opencv_core.CvPoint;
-import static org.scify.jthinkfreedom.stimuli.HeadDirectionStimulus.prevNoseCenter;
+
 
 /**
  *
@@ -30,7 +30,7 @@ public class HeadUpStimulus extends HeadDirectionStimulus {
         
         // If the distance of the current nose's rectangle's center from the eyes
         // is less than the last one, then the head moved up
-        if(Math.abs(curNoseCenter.y() - totalCenter.y()) <
+        if(Math.abs(curNoseCenter.y() - totalCenter.y()) + RECT_OFFSET/2 <
                 Math.abs(prevNoseCenter.y() - totalCenter.y())) {
             // Lock direction
             lock[UP] = true;

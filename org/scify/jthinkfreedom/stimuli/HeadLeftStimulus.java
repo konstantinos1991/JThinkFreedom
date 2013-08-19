@@ -4,8 +4,6 @@
  */
 package org.scify.jthinkfreedom.stimuli;
 
-import com.googlecode.javacv.cpp.opencv_core.CvPoint;
-
 /**
  *
  * @author eustratiadis-hua
@@ -25,7 +23,7 @@ public class HeadLeftStimulus extends HeadDirectionStimulus {
         // If the distance of the current nose's rectangle's center
         // from the left eye is less than the last one
         // then the head moved left
-        if(Math.abs(curNoseCenter.x() - prevLeftEyeCenter.x()) <
+        if(Math.abs(curNoseCenter.x() - prevLeftEyeCenter.x()) + RECT_OFFSET/2 <
                 Math.abs(curNoseCenter.x() - prevRightEyeCenter.x())) {
             // Lock direction
             lock[LEFT] = true;

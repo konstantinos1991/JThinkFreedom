@@ -25,7 +25,6 @@ public class MouseMoveRightReactor extends ReactorAdapter {
             // Get target mouse coordinates
             double targetX = MouseInfo.getPointerInfo().getLocation().getX() + MOUSE_SPEED;
 
-            System.err.println("Mouse Moved Right!");
             // Move mouse up
             mouseRight.mouseMove((int) targetX, (int) curY);
         } catch (AWTException ex) {

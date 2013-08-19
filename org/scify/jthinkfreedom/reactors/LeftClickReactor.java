@@ -20,7 +20,7 @@ public class LeftClickReactor  extends ReactorAdapter {
     public void react() {
         try {
             Robot rClickBot = new Robot();
-            System.err.println("Left Click!");
+
             // Press right click
             rClickBot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
             // Release right click
