@@ -1,5 +1,7 @@
 package org.scify.jthinkfreedom.stimuli.tools;
 
+import com.googlecode.javacv.cpp.opencv_core.IplImage;
+import static com.googlecode.javacv.cpp.opencv_highgui.cvSaveImage;
 import java.awt.AWTException;
 import java.awt.BasicStroke;
 import java.awt.Graphics;
@@ -18,6 +20,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -118,6 +121,11 @@ public class WorkSpace extends JPanel {
                             BufferedImage subImage = image.getSubimage((int) rect.getX(),
                                     (int) rect.getY(),
                                     w, h);
+                            
+                            Random gen = new Random();
+                            IplImage snapshot = IplImage.createFrom(subImage);
+                            
+                            cvSaveImage("eyes/snap-"+gen.nextInt(1000000)+"-"+iterator+".jpg", snapshot);
 
                             String sentence = path + "/";
                             if (subImage != null) {

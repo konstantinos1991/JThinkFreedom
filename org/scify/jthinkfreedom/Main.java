@@ -11,18 +11,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import org.scify.jthinkfreedom.reactors.LeftClickReactor;
-import org.scify.jthinkfreedom.reactors.MouseMoveDownReactor;
-import org.scify.jthinkfreedom.reactors.MouseMoveLeftReactor;
-import org.scify.jthinkfreedom.reactors.MouseMoveRightReactor;
-import org.scify.jthinkfreedom.reactors.MouseMoveUpReactor;
 import org.scify.jthinkfreedom.reactors.RightClickReactor;
 import org.scify.jthinkfreedom.sensors.WebcamSensor;
 import org.scify.jthinkfreedom.sensors.ISensor;
 import org.scify.jthinkfreedom.sensors.NetworkImageSensor;
-import org.scify.jthinkfreedom.stimuli.HeadDownStimulus;
-import org.scify.jthinkfreedom.stimuli.HeadLeftStimulus;
-import org.scify.jthinkfreedom.stimuli.HeadRightStimulus;
-import org.scify.jthinkfreedom.stimuli.HeadUpStimulus;
 import org.scify.jthinkfreedom.stimuli.LeftEyeBlinkStimulus;
 import org.scify.jthinkfreedom.stimuli.RightEyeBlinkStimulus;
 
