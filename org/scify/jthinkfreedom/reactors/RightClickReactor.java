@@ -25,6 +25,8 @@ public class RightClickReactor extends ReactorAdapter  {
             rClickBot.mousePress(InputEvent.BUTTON3_DOWN_MASK);
             // Release right click
             rClickBot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
+            // Message
+            System.err.println("Right Click");
         } catch (AWTException ex) {
             Logger.getLogger(RightClickReactor.class.getName()).log(Level.SEVERE, null, ex);
         }
