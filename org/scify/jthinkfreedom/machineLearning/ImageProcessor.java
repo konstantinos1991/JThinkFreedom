@@ -24,7 +24,7 @@ import org.opencv.core.Core;
 public class ImageProcessor {
 
 	static {
-		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+//		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 	}
 
 	private Mat source; // will read info from input image and store info to

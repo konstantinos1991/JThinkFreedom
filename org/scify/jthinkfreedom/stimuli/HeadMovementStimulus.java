@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Date;
+import org.scify.jthinkfreedom.machineLearning.EyeClassifier;
 import org.scify.jthinkfreedom.sensors.ISensor;
 import org.scify.jthinkfreedom.stimuli.haarModels.HaarCascadeModel;
 
@@ -63,6 +64,8 @@ public abstract class HeadMovementStimulus extends StimulusAdapter<IplImage> {
     // For the nose
     protected static CvRect noseRect = null;
     protected static CvRect previousNoseRect = null;
+    
+    protected EyeClassifier ec = null;
     
     
     private long lastUpdate = 0;
@@ -120,6 +123,8 @@ public abstract class HeadMovementStimulus extends StimulusAdapter<IplImage> {
         } catch (URISyntaxException | IOException e) {
             e.printStackTrace(System.err);
         }
+        
+        ec = new EyeClassifier("Model");
 
     }
     
@@ -269,6 +274,9 @@ public abstract class HeadMovementStimulus extends StimulusAdapter<IplImage> {
                     (lastRightRect.y()+lastRightRect.height())),
                 CvScalar.RED, 2, CV_AA, 0);
         }
+        
+        String s = ec.predictEyeTypeOfIplImage(faceImage);
+        System.out.println(s);
         // Snapshot
         cvSaveImage("tracked.jpg", faceImage);
     }
