@@ -6,7 +6,7 @@ JThinkFreedom is a framework for mapping behaviors (detected through any source,
 OpenCV - JavaCV
 ===============
 
-JThinkFreedom runs on OpenCV (Open source Computer Vision). JavaCV is a java implementation of OpenCV.
+JThinkFreedom runs on OpenCV (Open source Computer Vision). JavaCV is a Java implementation of OpenCV.
 
 Building OpenCV on Linux
 ========================
@@ -14,11 +14,11 @@ Building OpenCV on Linux
 <dl>
   <dt>Building OpenCV with Java support</dt>
   <dd>cmake and ant are required. Also, the JAVA_HOME variable must be set in .bashrc</dd>
-  <dd>Download OpenCV 2.4.5 [here](http://opencv.org/downloads.html)</dd>
+  <dd>Download OpenCV 2.4.5(http://opencv.org/downloads.html)</dd>
   <dd>tar -xzvf opencv-2.4.5.tar.gz</dd>
   <dd>cmake .</dd>
   <dt>Jars needed</dt>
-  <dd>Download JavaCV [cppjars](http://code.google.com/p/javacv/downloads/detail?name=javacv-0.6-cppjars.zip)</dd>
-  <dd>Download JavaCV [bin](http://code.google.com/p/javacv/downloads/detail?name=javacv-0.6-bin.zip)</dd>
+  <dd>http://code.google.com/p/javacv/downloads/detail?name=javacv-0.6-cppjars.zip</dd>
+  <dd>http://code.google.com/p/javacv/downloads/detail?name=javacv-0.6-bin.zip</dd>
   <dd>Unzip and enjoy!!</dd>
 </dl>
