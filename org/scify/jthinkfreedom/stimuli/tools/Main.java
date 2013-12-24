@@ -16,10 +16,9 @@ import javax.swing.KeyStroke;
 
 public final class Main extends JFrame {
 
-    private static final int SCR_WIDTH = 
-            Toolkit.getDefaultToolkit().getScreenSize().width;
-    private static final int SCR_HEIGHT = 
-            Toolkit.getDefaultToolkit().getScreenSize().height;
+    private static final int SCR_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width;
+    private static final int SCR_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height;
+    
     private static Main window;
     private WorkSpace space;
     private JMenuBar menubar;
@@ -32,16 +31,16 @@ public final class Main extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         GridBagConstraints gbc = new GridBagConstraints();
-        
+
         space = new WorkSpace();
-        
-        // For alignment and stuff
+
+        // For alignment
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.ipadx = 640;
         gbc.ipady = 460;
         this.add(space, gbc);
-        
+
         createMenuBar();
     }
 
@@ -54,13 +53,10 @@ public final class Main extends JFrame {
     void createMenuBar() {
         menubar = new JMenuBar();
 
-
         // <BEGIN> file menu
         JMenu file = new JMenu("File");
         file.setMnemonic(KeyEvent.VK_F);
         // <END> file menu
-
-
 
         // <BEGIN> open directory button
         JMenuItem openDirectory = new JMenuItem("Open");
@@ -135,7 +131,6 @@ public final class Main extends JFrame {
         });
         // <END> open directory button
 
-
         // <BEGIN> next previous image button
         JMenuItem nextImage = new JMenuItem("Next Image");
         nextImage.setMnemonic(KeyEvent.VK_V);
@@ -174,7 +169,6 @@ public final class Main extends JFrame {
         });
         // <END> closer button
 
-
         // Adding buttons to the menu
         file.add(openDirectory);
         file.add(saveIn);
@@ -188,7 +182,6 @@ public final class Main extends JFrame {
         file.addSeparator();
 
         file.add(fileClose);
-
 
         // Add the menu to the menubar
         menubar.add(file);

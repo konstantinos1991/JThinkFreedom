@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.scify.jthinkfreedom.stimuli;
 
 import com.googlecode.javacpp.Loader;
@@ -36,7 +32,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Date;
-import org.scify.jthinkfreedom.machineLearning.EyeClassifier;
 import org.scify.jthinkfreedom.sensors.ISensor;
 import org.scify.jthinkfreedom.stimuli.haarModels.HaarCascadeModel;
 
@@ -45,13 +40,12 @@ import org.scify.jthinkfreedom.stimuli.haarModels.HaarCascadeModel;
  * @author eustratiadis-hua
  */
 public abstract class HeadMovementStimulus extends StimulusAdapter<IplImage> {
-    
+
     // Constants
     protected static final int RECT_OFFSET = 20; // Pixels larger
-    
+
     // Declare classifiers for face elements
-    protected opencv_objdetect.CvHaarClassifierCascade eyeClassifier = null, 
-            faceClassifier = null, noseClassifier = null;
+    protected opencv_objdetect.CvHaarClassifierCascade eyeClassifier = null, faceClassifier = null;
     protected static IplImage grabbedImage = null;
     // To zoom in the face
     protected static IplImage faceImage = null;
@@ -61,16 +55,10 @@ public abstract class HeadMovementStimulus extends StimulusAdapter<IplImage> {
     protected static CvRect previousLeftRect = null, previousRightRect = null;
     // For the faces
     protected static CvRect faceRect = null;
-    // For the nose
-    protected static CvRect noseRect = null;
-    protected static CvRect previousNoseRect = null;
-    
-    protected EyeClassifier ec = null;
-    
-    
+
     private long lastUpdate = 0;
     private int updateTimer = 100;
-    
+
     // Each subclass should declare their own storage, grayImage, and smallImage
     private CvMemStorage storage = null;
     private IplImage grayImage = null, smallImage = null;
@@ -83,7 +71,7 @@ public abstract class HeadMovementStimulus extends StimulusAdapter<IplImage> {
     public IplImage getGrabbedImage() {
         return grabbedImage;
     }
-    
+
     public IplImage getFaceImage() {
         return faceImage;
     }
@@ -92,68 +80,60 @@ public abstract class HeadMovementStimulus extends StimulusAdapter<IplImage> {
         try {
             // Preload the opencv_objdetect module to work around a known bug.
             Loader.load(opencv_objdetect.class);
-            
+
             // Load the classifier files from Java resources.
             String openClassifierName = "haarcascade_eye.xml";
             String faceClassifierName = "haarcascade_frontalface_alt.xml";
-            String noseClassifierName = "haarcascade_mcs_nose.xml";
-            
+
             File openClassifierFile = new File(HaarCascadeModel.class.getResource(openClassifierName).toURI());
             File faceClassifierFile = new File(HaarCascadeModel.class.getResource(faceClassifierName).toURI());
-            File noseClassifierFile = new File(HaarCascadeModel.class.getResource(noseClassifierName).toURI());
-            
-            if(openClassifierFile.length() <= 0) {
+
+            if (openClassifierFile.length() <= 0) {
                 throw new IOException("Could not extract \"" + openClassifierName + "\" from Java resources.");
             }
-            if(faceClassifierFile.length() <= 0) {
+            if (faceClassifierFile.length() <= 0) {
                 throw new IOException("Could not extract \"" + faceClassifierName + "\" from Java resources.");
-            } 
-            if(noseClassifierFile.length() <= 0) {
-                throw new IOException("Could not extract \"" + noseClassifierName + "\" from Java resources.");
             }
 
-            eyeClassifier = new CvHaarClassifierCascade(cvLoad(openClassifierFile.getAbsolutePath())); 
-            faceClassifier = new CvHaarClassifierCascade(cvLoad(faceClassifierFile.getAbsolutePath())); 
-            noseClassifier = new CvHaarClassifierCascade(cvLoad(noseClassifierFile.getAbsolutePath()));
-            
-            if (eyeClassifier.isNull() || faceClassifier.isNull() || noseClassifier.isNull()) {
+            eyeClassifier = new CvHaarClassifierCascade(cvLoad(openClassifierFile.getAbsolutePath()));
+            faceClassifier = new CvHaarClassifierCascade(cvLoad(faceClassifierFile.getAbsolutePath()));
+
+            if (eyeClassifier.isNull() || faceClassifier.isNull()) {
                 throw new IOException("Could not load the classifier files.");
             }
 
         } catch (URISyntaxException | IOException e) {
             e.printStackTrace(System.err);
         }
-        
-        ec = new EyeClassifier("Model");
 
     }
-    
+
     @Override
     public void onDataReceived() {
         // To be implemented by offspring
         if (lSensors.isEmpty()) {
             return;
         }
-        
+
         if (new Date().getTime() - lastUpdate < updateTimer) {
             return;
         }
         lastUpdate = new Date().getTime();
-        
+
         for (ISensor<IplImage> isCurSensor : lSensors) {
             // Get latest data from sensor
             grabbedImage = isCurSensor.getData();
             // Detect all faces in current frame
             facesDetected = detectFaces(grabbedImage);
             // If no faces were found, terminate
-            if(facesDetected.total() == 0) {
+            if (facesDetected.total() == 0) {
                 return;
             }
             // Get most central face
             faceRect = getCentralRectangle(facesDetected);
-            
+
             // If a face was found
-            if(faceRect != null && faceRect.width() > 0 && faceRect.height() > 0) {
+            if (faceRect != null && faceRect.width() > 0 && faceRect.height() > 0) {
                 // Set region of interest (the face)
                 cvSetImageROI(grabbedImage, faceRect);
                 faceImage = cvCreateImage(cvGetSize(grabbedImage),
@@ -163,23 +143,16 @@ public abstract class HeadMovementStimulus extends StimulusAdapter<IplImage> {
                 // Call detect() method of offspring
                 // It detects the element of interest in the current face
                 detect();
-                
+
                 // Reset region of interest
                 cvResetImageROI(grabbedImage);
             }
-            
+
             // If you didnt succeed in finding any eyes, return
-            if(lastLeftRect == null || lastRightRect == null) {
+            if (lastLeftRect == null || lastRightRect == null) {
                 return;
             }
-            
-            // If you didn't succeed in finding a nose, return
-            // we check for it seperately in case we only need eye detection
-            // in that case, put it in comments
-//            if(noseRect == null) {
-//                return;
-//            }
-            
+
             // Makes system slow - Only to be called when debugging
             drawTrackingData();
 
@@ -187,133 +160,115 @@ public abstract class HeadMovementStimulus extends StimulusAdapter<IplImage> {
             // It decides whether or not a reactor should be called
             defineReactionCriteria();
         }
-        
+
     }
-    
+
     // Returns a sequence of faces in the specified image
     protected CvSeq detectFaces(IplImage curImage) {
         grayImage = IplImage.create(cvGetSize(curImage), IPL_DEPTH_8U, 1);
         cvCvtColor(curImage, grayImage, CV_BGR2GRAY);
-        
+
         smallImage = IplImage.create(curImage.width(),
                 curImage.height(), IPL_DEPTH_8U, 1);
-        
+
         cvResize(grayImage, smallImage, CV_INTER_LINEAR);
-        
+
         // Equalize the small grayscale
         cvEqualizeHist(smallImage, smallImage);
-        
+
         // Create temp storage, used during object detection
         storage = CvMemStorage.create();
-        
+
         // Determine whether a face has been found
         CvSeq faces = cvHaarDetectObjects(smallImage, faceClassifier, storage, 1.1, 3, CV_HAAR_DO_CANNY_PRUNING);
-        
+
         cvClearMemStorage(storage);
         return faces;
     }
-    
+
     // Returns the most central rectangle in the image
     protected CvRect getCentralRectangle(CvSeq sequence) {
         CvRect rect = new CvRect(0, 0, 0, 0);
         CvPoint rectCenter = new CvPoint(0, 0);
         try {
             // For every rectangle detected
-            for(int i=0; i<sequence.total(); i++) {
+            for (int i = 0; i < sequence.total(); i++) {
                 CvRect r = new CvRect(cvGetSeqElem(sequence, i));
                 // Get the center of the current rectangle
                 CvPoint curCenter = getRectangleCenter(r);
                 // If current face is closer to the middle of the screen
-                if(Math.abs(curCenter.x() - getGrabbedImage().width()/2) < 
-                        Math.abs(rectCenter.x() - getGrabbedImage().width()/2) &&
-                        Math.abs(curCenter.y() - getGrabbedImage().height()/2) <
-                        Math.abs(rectCenter.y() - getGrabbedImage().height()/2)) {
+                if (Math.abs(curCenter.x() - getGrabbedImage().width() / 2)
+                        < Math.abs(rectCenter.x() - getGrabbedImage().width() / 2)
+                        && Math.abs(curCenter.y() - getGrabbedImage().height() / 2)
+                        < Math.abs(rectCenter.y() - getGrabbedImage().height() / 2)) {
                     // Make it our new central face
                     rect = r;
                 }
             }
             return rect;
-        }
-        catch(NullPointerException e) {
+        } catch (NullPointerException e) {
             e.printStackTrace(System.err);
             System.err.println("Has detect been called?");
             return rect;
         }
     }
-    
-    protected void drawTrackingData () {
-        // Draw a magenta rectangle around the face
-        //if(faceRect != null){
-        //    cvDrawRect(grabbedImage,
-        //        new CvPoint(faceRect.x(), faceRect.y()),
-        //        new CvPoint((faceRect.x()+faceRect.width()),
-        //            (faceRect.y()+faceRect.height())),
-        //        CvScalar.MAGENTA, 2, CV_AA, 0);
-        //}
-        // Draw a black rectangle around the nose
-        if(noseRect != null) {
-            cvDrawRect(faceImage,
-                new CvPoint(noseRect.x(), noseRect.y()),
-                new CvPoint((noseRect.x()+noseRect.width()),
-                    (noseRect.y()+noseRect.height())),
-                CvScalar.BLACK, 2, CV_AA, 0);
-        }
+
+    protected void drawTrackingData() {
+
         // Draw a green rectangle around the left eye
-        if(lastLeftRect != null) {
+        if (lastLeftRect != null) {
             cvDrawRect(faceImage,
-                new CvPoint(lastLeftRect.x(), lastLeftRect.y()),
-                new CvPoint((lastLeftRect.x()+lastLeftRect.width()),
-                    (lastLeftRect.y()+lastLeftRect.height())),
-                CvScalar.GREEN, 2, CV_AA, 0);
+                    new CvPoint(lastLeftRect.x(), lastLeftRect.y()),
+                    new CvPoint((lastLeftRect.x() + lastLeftRect.width()),
+                            (lastLeftRect.y() + lastLeftRect.height())),
+                    CvScalar.GREEN, 2, CV_AA, 0);
         }
         // Draw a red rectangle around the right eye
-        if(lastRightRect != null) {
+        if (lastRightRect != null) {
             cvDrawRect(faceImage,
-                new CvPoint(lastRightRect.x(), lastRightRect.y()),
-                new CvPoint((lastRightRect.x()+lastRightRect.width()),
-                    (lastRightRect.y()+lastRightRect.height())),
-                CvScalar.RED, 2, CV_AA, 0);
+                    new CvPoint(lastRightRect.x(), lastRightRect.y()),
+                    new CvPoint((lastRightRect.x() + lastRightRect.width()),
+                            (lastRightRect.y() + lastRightRect.height())),
+                    CvScalar.RED, 2, CV_AA, 0);
         }
-        
-        String s = ec.predictEyeTypeOfIplImage(faceImage);
-        System.out.println(s);
+
         // Snapshot
         cvSaveImage("tracked.jpg", faceImage);
     }
-    
+
     // Return the central point of a rectangle
     public CvPoint getRectangleCenter(CvRect r) {
-        return new CvPoint(r.x() + (r.x()+r.width())/2,
-                r.y() + (r.y()+r.height())/2);
+        return new CvPoint(r.x() + (r.x() + r.width()) / 2,
+                r.y() + (r.y() + r.height()) / 2);
     }
-    
+
     // Check if larger (by offset) rectangle contains the smaller one
     public boolean containsRect(CvRect big, CvRect small, int offset) {
         // If big rectangle with offset leaves the screen borders
-        if(big.x() - offset/2 < 0 ||
-                big.y() - offset/2 < 0 ||
-                big.x() + big.width() + offset/2 > grabbedImage.width() ||
-                big.y() + big.height() + offset/2 > grabbedImage.height()) {
+        if (big.x() - offset / 2 < 0
+                || big.y() - offset / 2 < 0
+                || big.x() + big.width() + offset / 2 > grabbedImage.width()
+                || big.y() + big.height() + offset / 2 > grabbedImage.height()) {
             return false; // Do nothing
         }
         // Construct a rectangle RECT_OFFSTET pixels larger than the big one
-        CvRect container = new CvRect(big.x() - offset/2,
-                big.y() - offset/2,
-                big.x() + big.width() + offset/2,
-                big.y() + big.height() + offset/2);
+        CvRect container = new CvRect(big.x() - offset / 2,
+                big.y() - offset / 2,
+                big.x() + big.width() + offset / 2,
+                big.y() + big.height() + offset / 2);
         // See if the new rectangle contains the smaller one
-        if(container.x() < small.x() &&
-                container.y() < small.y() &&
-                container.x() + container.width() > small.x() + small.width() &&
-                container.y() + container.height() > small.y() + small.height()) {
+        if (container.x() < small.x()
+                && container.y() < small.y()
+                && container.x() + container.width() > small.x() + small.width()
+                && container.y() + container.height() > small.y() + small.height()) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
-    
+
     // To be overriden by offspring
     protected abstract void detect();
+
     protected abstract void defineReactionCriteria();
 }

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.scify.jthinkfreedom.stimuli;
 
 import java.util.LinkedList;
@@ -12,12 +8,14 @@ import org.scify.jthinkfreedom.reactors.IReactor;
 /**
  *
  * @author ggianna
+ * @param <T>
  */
 public abstract class StimulusAdapter<T> implements IStimulus<T> {
+
     protected List<IReactor> lReactors = new LinkedList<>();
     protected List<ISensor<T>> lSensors = new LinkedList<>();
     protected boolean bRunning;
-    
+
     @Override
     public void addReactor(IReactor rToUse) {
         lReactors.add(rToUse);
@@ -88,5 +86,4 @@ public abstract class StimulusAdapter<T> implements IStimulus<T> {
         t.start();
     }
 
-    
 }

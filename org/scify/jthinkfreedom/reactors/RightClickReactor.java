@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.scify.jthinkfreedom.reactors;
 
 import java.awt.AWTException;
@@ -14,7 +10,7 @@ import java.util.logging.Logger;
  *
  * @author ggianna
  */
-public class RightClickReactor extends ReactorAdapter  {
+public class RightClickReactor extends ReactorAdapter {
 
     @Override
     public void react() {

@@ -28,11 +28,11 @@ public abstract class EyeBlinkStimulus extends HeadMovementStimulus {
     protected static final int BOTH_EYES = 2;
     protected static final int ONE_EYE = 1;
     protected static final int VALIDITY = 5; // Frames that have to be valid to react
-    
+
     protected CvSeq eyesDetected = null;
     protected String whichEye = ""; // Determine which eye closed
     protected int validityCount = 0; // Current validity
-    
+
     // Each subclass should declare their own storage, grayImage, and smallImage
     private CvMemStorage storage = null;
     private IplImage grayImage = null, smallImage = null;
@@ -45,40 +45,39 @@ public abstract class EyeBlinkStimulus extends HeadMovementStimulus {
     protected void detect() {
         // Detect all eyes in the face area
         eyesDetected = detectOpenEyes(faceImage);
-        if(eyesDetected.total() > 0) {
+        if (eyesDetected.total() > 0) {
             // Get rightmost and leftmost eyes
             lastLeftRect = getLeftmostEye();
             lastRightRect = getRightmostEye();
         }
     }
-    
+
     @Override
     protected void defineReactionCriteria() {
         // If left rectangle or right rectangle remain with
         // the initial values (0, 0) or (IMG_WIDTH, IMG_HEIGHT)
-        if(containsRect(lastLeftRect, new CvRect(0, 0, 0, 0), 0) ||
-                containsRect(lastRightRect, 
-                new CvRect(grabbedImage.width(), grabbedImage.height(),
-                    0, 0), 0)) {
+        if (containsRect(lastLeftRect, new CvRect(0, 0, 0, 0), 0)
+                || containsRect(lastRightRect,
+                        new CvRect(grabbedImage.width(), grabbedImage.height(),
+                                0, 0), 0)) {
             // Then we lost the eyes
             lastLeftRect = lastRightRect = null;
             return;
         }
-        
+
         // If the right and left eye are the same one
         // (if one rectangle contains the other)
-        if(containsRect(lastLeftRect, lastRightRect, RECT_OFFSET) || 
-                containsRect(lastRightRect, lastLeftRect, RECT_OFFSET)) {
+        if (containsRect(lastLeftRect, lastRightRect, RECT_OFFSET)
+                || containsRect(lastRightRect, lastLeftRect, RECT_OFFSET)) {
             // then only one eye has been found (the other must be closed)
 
             // Make sure previous eyes were initialized
-            if(previousRightRect == null || previousLeftRect == null) {
+            if (previousRightRect == null || previousLeftRect == null) {
                 return;
             }
             // Determine which eye blinked!
             whichEye = whichEyeBlinked();
-        }
-        else {
+        } else {
             // both eyes are open
             // Mark them as previous eyes
             previousLeftRect = lastLeftRect;
@@ -154,7 +153,7 @@ public abstract class EyeBlinkStimulus extends HeadMovementStimulus {
             return right;
         }
     }
-    
+
     protected void shouldReact() {
         if (++validityCount == VALIDITY) {
             callReactors();

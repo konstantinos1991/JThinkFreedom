@@ -121,11 +121,11 @@ public class WorkSpace extends JPanel {
                             BufferedImage subImage = image.getSubimage((int) rect.getX(),
                                     (int) rect.getY(),
                                     w, h);
-                            
+
                             Random gen = new Random();
                             IplImage snapshot = IplImage.createFrom(subImage);
-                            
-                            cvSaveImage("eyes/snap-"+gen.nextInt(1000000)+"-"+iterator+".jpg", snapshot);
+
+                            cvSaveImage("eyes/snap-" + gen.nextInt(1000000) + "-" + iterator + ".jpg", snapshot);
 
                             String sentence = path + "/";
                             if (subImage != null) {
@@ -150,7 +150,6 @@ public class WorkSpace extends JPanel {
 
                                     String description = newSentence.substring(newSentence.indexOf(" ") + 1, newSentence.length());
                                     description += " " + (int) rect.getX() + " " + (int) rect.getY() + " " + w + " " + h;
-
 
                                     obj.set(index, sentence + " " + numb + " " + description);
                                 } else {
@@ -255,7 +254,7 @@ public class WorkSpace extends JPanel {
                 if (minWidth < 0) {
                     minWidth = 0;
                 }
-                
+
                 rect.setRect(x - (minHeight / 2), y - (minWidth / 2), minHeight, minWidth);
 
                 repaint();
@@ -355,11 +354,11 @@ public class WorkSpace extends JPanel {
             g2d.drawImage(image, 0, 0, null);
         }
 
-
         if (rect != null) {
-            float epaisseur = 1; /* taille de la ligne */
+            float epaisseur = 1;
+
             float[] style = {10, 5};
-            /* les pointillés seront 2 fois plus long que les blancs */
+
             g2d.setStroke(new BasicStroke(
                     epaisseur,
                     BasicStroke.CAP_BUTT,
@@ -367,7 +366,7 @@ public class WorkSpace extends JPanel {
                     9.0f,
                     style,
                     0));
-            // si une zone est selectionnée
+
             if (rect != null) {
                 g2d.draw(rect);
 

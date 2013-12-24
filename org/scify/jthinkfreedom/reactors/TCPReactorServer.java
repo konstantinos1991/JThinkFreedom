@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.scify.jthinkfreedom.reactors;
 
 import java.io.IOException;
@@ -18,11 +14,12 @@ import java.util.logging.Logger;
  * @author ggianna
  */
 public class TCPReactorServer implements Runnable {
+
     protected ServerSocket ssListener;
     Thread tListener;
     boolean bStop = false;
     List<IReactor> lReactors;
-    
+
     public TCPReactorServer(int iPort) {
         try {
             ssListener = new ServerSocket(iPort);
@@ -31,20 +28,20 @@ public class TCPReactorServer implements Runnable {
             Logger.getLogger(TCPReactorServer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public void start() {
         tListener = new Thread(this);
         tListener.start();
-        
+
     }
-    
+
     @Override
     public void run() {
         while (!bStop) {
             try {
                 ssListener.setSoTimeout(1000);
                 Socket sRecv = ssListener.accept();
-                
+
                 // Connection is enough to signal reaction
                 if (sRecv.isConnected()) {
                     // thus, react 
@@ -52,19 +49,20 @@ public class TCPReactorServer implements Runnable {
                     // and close connection
                     sRecv.close();
                 }
-                
+
             } catch (SocketTimeoutException ste) {
                 // Ignore
             } catch (IOException ex) {
                 Logger.getLogger(TCPReactorServer.class.getName()).log(Level.SEVERE, null, ex);
-            } 
+            }
         }
-        
+
     }
+
     public void stop() {
         bStop = true;
     }
-    
+
     public void addReactor(IReactor rToAdd) {
         lReactors.add(rToAdd);
     }
@@ -72,7 +70,7 @@ public class TCPReactorServer implements Runnable {
     public void removeReactor(IReactor rToTRemove) {
         lReactors.remove(rToTRemove);
     }
-    
+
     public void clearReactors() {
         lReactors.clear();
     }
@@ -86,6 +84,5 @@ public class TCPReactorServer implements Runnable {
     public boolean isRunning() {
         return !bStop;
     }
-    
-    
+
 }
