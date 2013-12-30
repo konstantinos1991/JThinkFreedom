@@ -14,7 +14,7 @@ import org.scify.jthinkfreedom.sensors.ISensor;
 import org.scify.jthinkfreedom.sensors.NetworkGraphSensor;
 import org.scify.jthinkfreedom.sensors.NetworkImageSensor;
 import org.scify.jthinkfreedom.sensors.WebcamSensor;
-import org.scify.jthinkfreedom.stimuli.LeftEyeBlinkStimulus;
+import org.scify.jthinkfreedom.stimuli.HeadMovementStimulus;
 
 /**
  *
@@ -59,11 +59,11 @@ public class ReactorClient {
         TCPReactorClient trc = new TCPReactorClient();
         // Add TCP reactor server data to TCP reactor client
         trc.add(new Pair<>(sServerIP, iServerPort));
-        LeftEyeBlinkStimulus sLeftBlinkStimulus = new LeftEyeBlinkStimulus();
-        sSensor.addStimulus(sLeftBlinkStimulus);
-        sLeftBlinkStimulus.addSensor(sSensor);
+        HeadMovementStimulus hmStimulus = new HeadMovementStimulus();
+        sSensor.addStimulus(hmStimulus);
+        hmStimulus.addSensor(sSensor);
         // Add TCP reactor client as reactor
-        sLeftBlinkStimulus.addReactor(trc);
+        hmStimulus.addReactor(trc);
 
         final CanvasFrame win = new CanvasFrame("Source");
         Date dStart = new Date();

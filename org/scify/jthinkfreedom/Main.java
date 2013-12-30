@@ -7,12 +7,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import org.scify.jthinkfreedom.reactors.LeftClickReactor;
-import org.scify.jthinkfreedom.reactors.RightClickReactor;
 import org.scify.jthinkfreedom.sensors.WebcamSensor;
 import org.scify.jthinkfreedom.sensors.ISensor;
 import org.scify.jthinkfreedom.sensors.NetworkImageSensor;
-import org.scify.jthinkfreedom.stimuli.LeftEyeBlinkStimulus;
-import org.scify.jthinkfreedom.stimuli.RightEyeBlinkStimulus;
+import org.scify.jthinkfreedom.stimuli.HeadMovementStimulus;
 
 /**
  *
@@ -26,7 +24,7 @@ public class Main {
             try {
                 System.err.println("Trying local capture..." + saArgs[0]);
                 sSensor = new WebcamSensor(Integer.parseInt(saArgs[0]));
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 System.err.println("Trying for network capture..." + saArgs[0]);
                 sSensor = new NetworkImageSensor(saArgs[0]);
             }
@@ -43,32 +41,28 @@ public class Main {
         }
 
         // Connect sensor to reactors and stimuli
-        // Left Click to Left Eye
-        LeftEyeBlinkStimulus sLeftBlinkStimulus = new LeftEyeBlinkStimulus();
-        sSensor.addStimulus(sLeftBlinkStimulus);
-        sLeftBlinkStimulus.addSensor(sSensor);
-        sLeftBlinkStimulus.addReactor(new LeftClickReactor());
-        // Right Click to Right Eye
-        RightEyeBlinkStimulus sRightBlinkStimulus = new RightEyeBlinkStimulus();
-        sSensor.addStimulus(sRightBlinkStimulus);
-        sRightBlinkStimulus.addSensor(sSensor);
-        sRightBlinkStimulus.addReactor(new RightClickReactor());
+        HeadMovementStimulus hmStimulus = new HeadMovementStimulus();
+        sSensor.addStimulus(hmStimulus);
+        hmStimulus.addSensor(sSensor);
+        hmStimulus.addReactor(new LeftClickReactor());
 
         // FOR SOCKET COMMUNICATION
         //TCPReactorClient rReactor = new TCPReactorClient();
         //rReactor.add(new Pair("83.212.112.152", 4444));
         //rReactor.add(new Pair("192.168.1.65", 4444));
-        //sLeftBlinkStimulus.addReactor(rReactor);
+        //hmStimulus.addReactor(rReactor);
         ///////////////////////////
         // Canvas
-        final CanvasFrame win = new CanvasFrame("Source");
+        final CanvasFrame win = new CanvasFrame("Source");// Canvas
+        win.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         opencv_core.IplImage iToRender;
 
         Date dStart = new Date();
 
         while (true) {
             // Canvas
-            iToRender = sLeftBlinkStimulus.getFaceImage();
+            iToRender = hmStimulus.getFaceImage();
             if (iToRender != null) {
                 win.showImage(iToRender);
             }
@@ -82,8 +76,6 @@ public class Main {
 
         sSensor.stop();
         // Finalize
-        // Canvas
-        win.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         win.dispose();
 
     }
