@@ -7,10 +7,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import org.scify.jthinkfreedom.reactors.LeftClickReactor;
+import org.scify.jthinkfreedom.reactors.RightClickReactor;
 import org.scify.jthinkfreedom.sensors.WebcamSensor;
 import org.scify.jthinkfreedom.sensors.ISensor;
 import org.scify.jthinkfreedom.sensors.NetworkImageSensor;
-import org.scify.jthinkfreedom.stimuli.HeadMovementStimulus;
+import org.scify.jthinkfreedom.stimuli.LeftEyeBlinkStimulus;
+import org.scify.jthinkfreedom.stimuli.RightEyeBlinkStimulus;
 
 /**
  *
@@ -41,10 +43,15 @@ public class Main {
         }
 
         // Connect sensor to reactors and stimuli
-        HeadMovementStimulus hmStimulus = new HeadMovementStimulus();
-        sSensor.addStimulus(hmStimulus);
-        hmStimulus.addSensor(sSensor);
-        hmStimulus.addReactor(new LeftClickReactor());
+        LeftEyeBlinkStimulus lbStimulus = new LeftEyeBlinkStimulus();
+        sSensor.addStimulus(lbStimulus);
+        lbStimulus.addSensor(sSensor);
+        lbStimulus.addReactor(new LeftClickReactor());
+        
+        RightEyeBlinkStimulus rbStimulus = new RightEyeBlinkStimulus();
+        sSensor.addStimulus(rbStimulus);
+        rbStimulus.addSensor(sSensor);
+        rbStimulus.addReactor(new RightClickReactor());
 
         // FOR SOCKET COMMUNICATION
         //TCPReactorClient rReactor = new TCPReactorClient();
@@ -62,7 +69,7 @@ public class Main {
 
         while (true) {
             // Canvas
-            iToRender = hmStimulus.getFaceImage();
+            iToRender = sSensor.getData();
             if (iToRender != null) {
                 win.showImage(iToRender);
             }

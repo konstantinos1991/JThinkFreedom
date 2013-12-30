@@ -48,9 +48,9 @@ public class HeadMovementStimulus extends StimulusAdapter<IplImage> {
     protected CvSeq facesDetected = null;
     protected CvRect faceRect = null;
     // For the eyes
+    protected IplImage leftEyeImage = null, rightEyeImage = null;
     protected CvSeq eyesDetected = null;
     protected CvRect leftEyeRect = null, rightEyeRect = null;
-    protected CvRect previousLeftEyeRect = null, previousRightEyeRect = null;
 
     // Each subclass should declare their own storage, grayImage, and smallImage
     private CvMemStorage storage = null;
@@ -107,7 +107,7 @@ public class HeadMovementStimulus extends StimulusAdapter<IplImage> {
         for (ISensor<IplImage> isCurSensor : lSensors) {
             // Get latest data from sensor
             grabbedImage = isCurSensor.getData();
-            
+
             // Detect all faces in current frame
             facesDetected = detectFaces(grabbedImage);
             // If no faces were found, terminate
@@ -117,7 +117,7 @@ public class HeadMovementStimulus extends StimulusAdapter<IplImage> {
             // Get most central face
             faceRect = getCentralRectangle(facesDetected);
 
-            // If a face was found
+            // If a face was found and has been initialized properly
             if (faceRect != null && faceRect.width() > 0 && faceRect.height() > 0) {
                 // Set region of interest (the face)
                 cvSetImageROI(grabbedImage, faceRect);
@@ -129,7 +129,7 @@ public class HeadMovementStimulus extends StimulusAdapter<IplImage> {
                 // Reset region of interest
                 cvResetImageROI(grabbedImage);
             }
-            
+
             // Now detect the eyes
             eyesDetected = detectEyes(faceImage);
             // If no eyes were found, terminate
@@ -141,13 +141,33 @@ public class HeadMovementStimulus extends StimulusAdapter<IplImage> {
             // Get rightmost eye
             rightEyeRect = getRightmostRectangle(eyesDetected);
 
-            // If something went wrong and the eyes weren't initialized
-            if(leftEyeRect == null || rightEyeRect == null) {
-                return;
+            // If eyes were found and have been initialized properly
+            if (leftEyeRect != null && rightEyeRect != null
+                    && leftEyeRect.width() > 0 && leftEyeRect.height() > 0
+                    && rightEyeRect.width() > 0 && rightEyeRect.height() > 0) {
+                // Set region of interest (the left eye)
+                cvSetImageROI(faceImage, leftEyeRect);
+                leftEyeImage = cvCreateImage(cvGetSize(faceImage),
+                        faceImage.depth(),
+                        faceImage.nChannels());
+                cvCopy(faceImage, leftEyeImage, null);
+                
+                // Reset region of interest
+                cvResetImageROI(faceImage);
+                
+                // Set region of interest (the right eye)
+                cvSetImageROI(faceImage, rightEyeRect);
+                rightEyeImage = cvCreateImage(cvGetSize(faceImage),
+                        faceImage.depth(),
+                        faceImage.nChannels());
+                cvCopy(faceImage, rightEyeImage, null);
+                
+                // Reset region of interest
+                cvResetImageROI(faceImage);
             }
             
             // Makes system slow - Only to be called when debugging
-            drawTrackingData();
+//            drawTrackingData();
         }
 
     }
@@ -278,7 +298,7 @@ public class HeadMovementStimulus extends StimulusAdapter<IplImage> {
     }
 
     // Return the central point of a rectangle
-    public CvPoint getRectangleCenter(CvRect r) {
+    protected CvPoint getRectangleCenter(CvRect r) {
         return new CvPoint(r.x() + (r.x() + r.width()) / 2,
                 r.y() + (r.y() + r.height()) / 2);
     }
