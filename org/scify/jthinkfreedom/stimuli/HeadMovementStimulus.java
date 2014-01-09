@@ -151,21 +151,21 @@ public class HeadMovementStimulus extends StimulusAdapter<IplImage> {
                         faceImage.depth(),
                         faceImage.nChannels());
                 cvCopy(faceImage, leftEyeImage, null);
-                
+
                 // Reset region of interest
                 cvResetImageROI(faceImage);
-                
+
                 // Set region of interest (the right eye)
                 cvSetImageROI(faceImage, rightEyeRect);
                 rightEyeImage = cvCreateImage(cvGetSize(faceImage),
                         faceImage.depth(),
                         faceImage.nChannels());
                 cvCopy(faceImage, rightEyeImage, null);
-                
+
                 // Reset region of interest
                 cvResetImageROI(faceImage);
             }
-            
+
             // Makes system slow - Only to be called when debugging
 //            drawTrackingData();
         }

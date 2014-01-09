@@ -47,7 +47,7 @@ public class Main {
         sSensor.addStimulus(lbStimulus);
         lbStimulus.addSensor(sSensor);
         lbStimulus.addReactor(new LeftClickReactor());
-        
+
         RightEyeBlinkStimulus rbStimulus = new RightEyeBlinkStimulus();
         sSensor.addStimulus(rbStimulus);
         rbStimulus.addSensor(sSensor);
