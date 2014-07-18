@@ -86,4 +86,9 @@ public abstract class StimulusAdapter<T> implements IStimulus<T> {
         t.start();
     }
 
+    @Override
+    public boolean shouldReact(Object first) {
+        return false;
+    }
+
 }

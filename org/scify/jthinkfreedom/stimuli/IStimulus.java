@@ -35,4 +35,12 @@ public interface IStimulus<T> {
 
     public void onDataReceived();
 
+    /**
+     * Takes the object that should trigger the reactors as parameter, and checks
+     * whether a condition is satisfied.
+     * 
+     * @param obj Any object.
+     * @return True if reaction condition is satisfied, false otherwise (false by default).
+     */
+    public boolean shouldReact(Object obj);
 }
