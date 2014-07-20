@@ -1,4 +1,4 @@
-package org.scify.jthinkfreedom.machineLearning;
+package org.scify.jthinkfreedom.machineLearning.initial;
 
 import java.util.ArrayList;
 

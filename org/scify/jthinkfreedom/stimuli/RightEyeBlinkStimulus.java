@@ -1,7 +1,7 @@
 package org.scify.jthinkfreedom.stimuli;
 
 import java.util.LinkedList;
-import org.scify.jthinkfreedom.machineLearning.EyeClassifier;
+import org.scify.jthinkfreedom.machineLearning.initial.EyeClassifier;
 
 /**
  *
